@@ -2,15 +2,15 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;max-width:430px;margin:0 auto;overflow-x:hidden;color:#1a1a2e}
 
 /* PAGE */
-.page{display:none;flex-direction:column;min-height:100vh;background:#f5f5f5}
+.page{display:none;flex-direction:column;height:100dvh;max-height:100dvh;background:#f5f5f5;overflow:hidden}
 .page.active{display:flex}
-.page-scroll{flex:1;overflow-y:auto;padding-bottom:80px}
+.page-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:80px;-webkit-overflow-scrolling:touch}
 
 /* TOPBAR HOME */
 .topbar-home{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;position:sticky;top:0;z-index:10;flex-shrink:0;border-bottom:0.5px solid #f0f0f0}
 .logo{font-size:22px;font-weight:700}
 .logo-kc{color:#1a1a2e}
-.logo-study{color:#F5A623}
+.logo-study{color:#FEDD00}
 .notif{font-size:20px;cursor:pointer}
 
 /* TOPBAR */
@@ -21,10 +21,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 /* BOTTOM NAV */
 .bottom-nav{display:flex;background:#fff;border-top:0.5px solid #f0f0f0;padding:8px 0 6px;flex-shrink:0}
 .bn-svg{width:22px;height:22px;color:#bbb;display:block;margin:0 auto}
-.bn.active .bn-svg{color:#F5A623}
+.bn.active .bn-svg{color:#FEDD00}
 .bn{flex:1;text-align:center;cursor:pointer;padding:2px 0}
 .bnl{font-size:10px;color:#bbb;margin-top:2px}
-.bn.active .bnl{color:#F5A623}
+.bn.active .bnl{color:#FEDD00}
 
 /* BANNER */
 .banner{margin:12px;border-radius:18px;overflow:hidden;position:relative;height:180px;background:#1a1a2e}
@@ -32,12 +32,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .banner-text{position:relative;z-index:1;padding:20px}
 .banner-text h1{font-size:18px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px}
 .banner-text p{font-size:11px;color:rgba(255,255,255,0.8);margin-bottom:14px}
-.banner-btn{display:inline-flex;align-items:center;gap:6px;background:#F5A623;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer}
+.banner-btn{display:inline-flex;align-items:center;gap:6px;background:#FEDD00;color:#1a1a2e;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer}
 
 /* LEVEL TABS */
 .level-tabs{display:flex;gap:8px;padding:12px;background:#fff}
 .lv-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:12px 8px;border-radius:14px;background:#f5f5f5;cursor:pointer;border:none;transition:all 0.2s}
-.lv-tab.active{background:#FFB800}
+.lv-tab.active{background:#FEDD00}
 .lv-icon{font-size:22px;margin-bottom:4px}
 .lv-name{font-size:11px;color:#666;text-align:center;font-weight:500;line-height:1.3}
 .lv-tab.active .lv-name{color:#fff;font-weight:600}
@@ -47,7 +47,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .courses-section{padding:14px 12px 0}
 .cs-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .cs-title{font-size:15px;font-weight:600;color:#1a1a2e}
-.cs-link{font-size:13px;color:#F5A623;cursor:pointer}
+.cs-link{font-size:13px;color:#FEDD00;cursor:pointer}
 
 /* COURSE CARD */
 .course-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
@@ -57,7 +57,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .cc-name{font-size:14px;font-weight:600;color:#1a1a2e}
 .cc-meta{font-size:12px;color:#888;margin:3px 0}
 .cc-price{font-size:14px;font-weight:700;color:#1a1a2e;margin-top:4px}
-.cc-btn{background:#F5A623;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0}
+.cc-btn{background:#FEDD00;color:#1a1a2e;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0}
 
 /* ALL COURSES */
 .level-group{margin-bottom:4px}
@@ -113,26 +113,26 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .buy-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-top:0.5px solid #f0f0f0;flex-shrink:0}
 .buy-lbl{font-size:11px;color:#888}
 .buy-price{font-size:20px;font-weight:700;color:#1a1a2e}
-.buy-btn{background:#F5A623;color:#fff;border:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+.buy-btn{background:#FEDD00;color:#1a1a2e;border:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
 
 /* PAYMENT */
 .pay-header{padding:18px 16px;background:#fff}
 .pay-name{font-size:17px;font-weight:600;color:#1a1a2e}
 .pay-meta{font-size:13px;color:#888;margin:4px 0 8px}
-.pay-price{font-size:24px;font-weight:700;color:#F5A623}
+.pay-price{font-size:24px;font-weight:700;color:#FEDD00}
 .sep{height:8px;background:#f5f5f5}
 .pay-sect{font-size:14px;font-weight:600;color:#1a1a2e;padding:16px 16px 10px;background:#fff}
 .pay-opt{display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-bottom:0.5px solid #f5f5f5;cursor:pointer}
 .radio{width:22px;height:22px;border-radius:50%;border:2px solid #ddd;flex-shrink:0;position:relative}
-.radio.on{border-color:#F5A623}
-.radio.on::after{content:'';position:absolute;width:12px;height:12px;background:#F5A623;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+.radio.on{border-color:#FEDD00}
+.radio.on::after{content:'';position:absolute;width:12px;height:12px;background:#FEDD00;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
 .pay-lbl{flex:1;font-size:14px;color:#1a1a2e}
 .pay-logo{font-size:15px;font-weight:800}
 .click-c{color:#00ADEF}
 .payme-c{color:#2196F3}
 .uzcard-c{color:#0056A6}
 .visa-c{color:#1A1F71}
-.cont-btn{display:block;width:calc(100% - 32px);margin:20px 16px 0;background:#F5A623;color:#fff;border:none;padding:15px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer}
+.cont-btn{display:block;width:calc(100% - 32px);margin:20px 16px 0;background:#FEDD00;color:#1a1a2e;border:none;padding:15px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer}
 .secure{text-align:center;font-size:12px;color:#aaa;padding:14px 16px}
 
 /* MY COURSES EMPTY */
@@ -140,7 +140,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .empty-icon{font-size:56px;margin-bottom:16px}
 .empty-title{font-size:16px;font-weight:600;color:#1a1a2e;margin-bottom:6px}
 .empty-sub{font-size:13px;color:#888;margin-bottom:20px}
-.empty-btn{background:#F5A623;color:#fff;border:none;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer}
+.empty-btn{background:#FEDD00;color:#1a1a2e;border:none;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer}
 
 /* TOPIK */
 .topik-card{background:#fff;border-radius:18px;margin:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
@@ -150,22 +150,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tc-body{padding:16px 20px}
 .tc-meta{font-size:13px;color:#888;margin-bottom:8px}
 .tc-price{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:14px}
-.tc-btn{background:#F5A623;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;width:100%}
+.tc-btn{background:#FEDD00;color:#1a1a2e;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;width:100%}
 
 /* PROFILE */
 .prof-hero{background:linear-gradient(135deg,#1a1a2e,#2d2b55);padding:30px 16px 24px;text-align:center}
-.prof-av{width:76px;height:76px;background:#F5A623;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;margin:0 auto 12px}
+.prof-av{width:76px;height:76px;background:#FEDD00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;margin:0 auto 12px}
 .prof-name{font-size:20px;font-weight:600;color:#fff}
 .prof-sub{font-size:13px;color:rgba(255,255,255,0.7);margin-top:4px}
 .prof-stats{display:flex;background:#fff;margin:14px 16px;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 .ps{flex:1;text-align:center}
-.ps-n{font-size:22px;font-weight:700;color:#F5A623}
+.ps-n{font-size:22px;font-weight:700;color:#FEDD00}
 .ps-l{font-size:11px;color:#aaa;margin-top:4px}
 
 /* ESKI BOLIMLAR (boshqa sahifalar uchun) */
 .bolim-item{background:#fff;border-bottom:0.5px solid #f5f5f5}
 .bolim-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
-.bolim-num{width:32px;height:32px;border-radius:50%;background:#FFC933;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.bolim-num{width:32px;height:32px;border-radius:50%;background:#FEDD00;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
 .bolim-name{flex:1;font-size:14px;font-weight:500;color:#1a1a2e}
 .bolim-arrow{font-size:20px;color:#aaa;transition:transform 0.2s}
 .bolim-darslar{background:#f9f9f9;padding:0 16px}
@@ -212,7 +212,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   position: absolute; bottom: 28px; left: 12px; right: 12px;
   height: 3px; background: rgba(255,255,255,0.25); border-radius: 2px;
 }
-.dars-progress-fill { height: 100%; background: #F5A623; border-radius: 2px; transition: width 0.3s; }
+.dars-progress-fill { height: 100%; background: #FEDD00; border-radius: 2px; transition: width 0.3s; }
 .dars-time-row {
   position: absolute; bottom: 8px; left: 12px; right: 12px;
   display: flex; justify-content: space-between;
@@ -231,7 +231,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1.5px;
   transition: all 0.2s;
 }
-.dars-tab.active { color: #F5A623; border-bottom-color: #F5A623; font-weight: 600; }
+.dars-tab.active { color: #FEDD00; border-bottom-color: #FEDD00; font-weight: 600; }
 
 /* Tab content */
 .dars-tab-content { padding-bottom: 16px; }
@@ -245,7 +245,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .material-icon { font-size: 24px; }
 .material-name { flex: 1; font-size: 13px; color: #1a1a2e; }
 .material-btn {
-  background: #FFF3DC; color: #F5A623; border: none;
+  background: #FFFBE0; color: #FEDD00; border: none;
   padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
 }
 
@@ -259,20 +259,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .dars-nav { display: flex; gap: 10px; padding: 16px 0 24px; }
 .dars-nav-prev {
   flex: 1; padding: 13px; border-radius: 12px;
-  border: 1.5px solid #F5A623; background: #fff;
-  color: #F5A623; font-size: 13px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid #FEDD00; background: #fff;
+  color: #FEDD00; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 .dars-nav-next {
   flex: 2; padding: 13px; border-radius: 12px;
-  border: none; background: #F5A623;
+  border: none; background: #FEDD00;
   color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
 }
 
 /* Dars item play button */
 .cd-dars-play {
-  width: 28px; height: 28px; border-radius: 50%; background: #FFF3DC;
+  width: 28px; height: 28px; border-radius: 50%; background: #FFFBE0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; color: #F5A623; flex-shrink: 0;
+  font-size: 10px; color: #FEDD00; flex-shrink: 0;
 }
 .cd-dars-time { font-size: 12px; color: #aaa; }
 
