@@ -378,3 +378,8 @@ body.dark .prof-stats { background: var(--card); }
 body.dark .material-item { border-bottom-color: var(--border); }
 body.dark .material-name { color: var(--text); }
 body.dark .test-placeholder { background: var(--bg3); }
+
+body.dark .lv-tab { background: #2a2a2a; }
+body.dark .lv-tab.active { background: #FEDD00; }
+body.dark .lv-tab.active .lv-name { color: #1a1a2e; }
+body.dark .lv-name { color: #aaa; }
