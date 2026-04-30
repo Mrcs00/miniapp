@@ -1,6 +1,6 @@
 const COURSES = {
   boshlangich: [
-    { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#F5A623', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
+    { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#FEDD00', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
     { id:'1B', name:'SNU 1B', level:"Boshlang'ich daraja", color:'#4CAF50', bolimlar:8, dars:25, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1b.jpg' },
     { id:'2A', name:'SNU 2A', level:"Boshlang'ich daraja", color:'#2196F3', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2a.jpg' },
     { id:'2B', name:'SNU 2B', level:"Boshlang'ich daraja", color:'#00BCD4', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2b.jpg' },
