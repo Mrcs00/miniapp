@@ -1,4 +1,12 @@
 // ── TUNGI REJIM ──
+var DAY_IMG = 'https://raw.githubusercontent.com/Mrcs00/miniapp/main/banner-day.jpg';
+var NIGHT_IMG = 'https://raw.githubusercontent.com/Mrcs00/miniapp/main/banner-night.jpg';
+
+function updateBannerImg(isDark) {
+  var img = document.getElementById('banner-img');
+  if (img) img.src = isDark ? NIGHT_IMG : DAY_IMG;
+}
+
 function toggleDarkMode() {
   var body = document.body;
   body.classList.toggle('dark');
@@ -6,13 +14,18 @@ function toggleDarkMode() {
   localStorage.setItem('darkMode', isDark ? '1' : '0');
   var btn = document.getElementById('dark-toggle');
   if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+  updateBannerImg(isDark);
 }
 
 // Saqlangan rejimni yuklash
 (function() {
-  if (localStorage.getItem('darkMode') === '1') {
+  var isDark = localStorage.getItem('darkMode') === '1';
+  if (isDark) {
     document.body.classList.add('dark');
+    var btn = document.getElementById('dark-toggle');
+    if (btn) btn.textContent = '☀️';
   }
+  updateBannerImg(isDark);
 })();
 
 const COURSES = {
