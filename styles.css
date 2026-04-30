@@ -40,7 +40,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .lv-tab.active{background:#FEDD00}
 .lv-icon{font-size:22px;margin-bottom:4px}
 .lv-name{font-size:11px;color:#666;text-align:center;font-weight:500;line-height:1.3}
-.lv-tab.active .lv-name{color:#fff;font-weight:600}
+.lv-tab.active .lv-name{color:#1a1a2e;font-weight:600}
 .lv-tab.active .lv-icon{filter:brightness(10)}
 
 /* COURSES SECTION */
