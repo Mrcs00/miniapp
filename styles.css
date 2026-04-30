@@ -7,7 +7,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .page-scroll{flex:1;overflow-y:auto;padding-bottom:80px}
 
 /* TOPBAR HOME */
-.topbar-home{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff}
+.topbar-home{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;position:sticky;top:0;z-index:10;flex-shrink:0;border-bottom:0.5px solid #f0f0f0}
 .logo{font-size:22px;font-weight:700}
 .logo-kc{color:#1a1a2e}
 .logo-study{color:#F5A623}
