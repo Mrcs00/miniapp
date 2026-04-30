@@ -232,6 +232,13 @@ function openCourse(courseId, fromPage) {
   showPage('course-detail');
 }
 
+function isLightColor(hex) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return (r*299 + g*587 + b*114) / 1000 > 128;
+}
+
 function hexToRgba(hex, alpha) {
   var r = parseInt(hex.slice(1,3),16);
   var g = parseInt(hex.slice(3,5),16);
@@ -386,8 +393,31 @@ function openDars(courseId, bolimNum, darsNum) {
 
   var prevBtn = document.getElementById('dars-prev-btn');
   var nextBtn = document.getElementById('dars-next-btn');
-  if (prevBtn) prevBtn.style.opacity = darsIndex <= 1 ? '0.4' : '1';
-  if (nextBtn) nextBtn.textContent = darsIndex >= totalDars ? 'Tugatish ✓' : 'Keyingi dars ›';
+  if (prevBtn) {
+    prevBtn.style.opacity = darsIndex <= 1 ? '0.4' : '1';
+    prevBtn.style.borderColor = course.color;
+    prevBtn.style.color = course.color;
+  }
+  if (nextBtn) {
+    nextBtn.textContent = darsIndex >= totalDars ? 'Tugatish ✓' : 'Keyingi dars ›';
+    nextBtn.style.background = course.color;
+    nextBtn.style.color = isLightColor(course.color) ? '#1a1a2e' : '#fff';
+  }
+
+  // Tab active rang
+  setTimeout(function() {
+    var activeTabs = document.querySelectorAll('.dars-tab.active');
+    for (var i = 0; i < activeTabs.length; i++) {
+      activeTabs[i].style.color = course.color;
+      activeTabs[i].style.borderBottomColor = course.color;
+    }
+    // Play button rang
+    var playBtn = document.querySelector('.dars-play-btn');
+    if (playBtn) playBtn.style.background = course.color;
+    // Progress rang
+    var fill = document.getElementById('dars-progress-fill');
+    if (fill) fill.style.background = course.color;
+  }, 50);
 
   var firstTab = document.querySelector('.dars-tab');
   setDarsTab('tavsif', firstTab);
@@ -419,14 +449,25 @@ function playVideo() {
 function setDarsTab(tab, el) {
   var tabs = ['tavsif', 'material', 'test'];
   for (var i = 0; i < tabs.length; i++) {
-    var content = document.getElementById('dars-tab-' + tabs[i]);
-    if (content) content.style.display = 'none';
+    var cnt = document.getElementById('dars-tab-' + tabs[i]);
+    if (cnt) cnt.style.display = 'none';
   }
   var allTabs = document.querySelectorAll('.dars-tab');
-  for (var j = 0; j < allTabs.length; j++) allTabs[j].classList.remove('active');
+  for (var j = 0; j < allTabs.length; j++) {
+    allTabs[j].classList.remove('active');
+    allTabs[j].style.color = '';
+    allTabs[j].style.borderBottomColor = '';
+  }
   var activeContent = document.getElementById('dars-tab-' + tab);
   if (activeContent) activeContent.style.display = 'block';
-  if (el) el.classList.add('active');
+  if (el) {
+    el.classList.add('active');
+    var course = findCourse(currentDars.courseId);
+    if (course) {
+      el.style.color = course.color;
+      el.style.borderBottomColor = course.color;
+    }
+  }
 }
 
 function prevDars() {
