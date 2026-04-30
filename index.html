@@ -6,6 +6,9 @@
   <title>KCstudy</title>
   <link rel="stylesheet" href="styles.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    html, body { height: 100%; height: 100dvh; overflow: hidden; }
+  </style>
 </head>
 <body>
 
@@ -13,7 +16,7 @@
   <div class="page active" id="page-home">
     <div class="topbar-home">
       <div class="logo"><span class="logo-kc">KC</span><span class="logo-study">study</span></div>
-      <div class="notif">🔔</div>
+      <div class="notif" id="dark-toggle" onclick="toggleDarkMode()">🌙</div>
     </div>
     <div class="page-scroll">
       <div class="banner">
