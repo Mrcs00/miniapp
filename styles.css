@@ -340,3 +340,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bl-dars-name { font-size: 15px; font-weight: 600; color: #1a1a2e; }
 .bl-dars-meta { font-size: 12px; color: #888; margin-top: 2px; }
 .bl-dars-arrow { font-size: 20px; color: #ccc; }
+
+/* Dark mode qo'shimcha */
+body.dark .bl-darslar { background: var(--bg2); }
+body.dark .bl-dars-item { background: var(--card); box-shadow: 0 1px 6px rgba(0,0,0,0.3); }
+body.dark .bl-dars-name { color: var(--text); }
+body.dark .bl-dars-meta { color: var(--text2); }
+body.dark .bl-dars-arrow { color: var(--text3); }
+body.dark .cd-bolimlar { background: var(--bg2); }
+body.dark .cd-bolim-item { background: var(--card); }
+body.dark .cd-bolim-name { color: var(--text); }
+body.dark .cd-darslar { background: var(--bg3); }
+body.dark .cd-dars-name { color: var(--text); }
+body.dark .buy-bar { background: var(--bg2); border-top-color: var(--border); }
+body.dark .buy-price { color: var(--text); }
+body.dark .dars-info { background: var(--bg2); }
+body.dark .dars-name { color: var(--text); }
+body.dark .dars-tab-content p { color: var(--text2); }
+body.dark .course-card { background: var(--card); }
+body.dark .cc-name { color: var(--text); }
+body.dark .cc-price { color: var(--text); }
+body.dark .topbar-home { background: var(--bg2); border-bottom-color: var(--border); }
+body.dark .topbar { background: var(--bg2); border-bottom-color: var(--border); }
+body.dark .t-title { color: var(--text); }
+body.dark .back { color: var(--text); }
+body.dark .bottom-nav { background: var(--bg2); border-top-color: var(--border); }
+body.dark .level-tabs { background: var(--bg2); }
+body.dark .lv-tab { background: var(--bg3); }
+body.dark .cs-title { color: var(--text); }
+body.dark .pay-header { background: var(--bg2); }
+body.dark .pay-name { color: var(--text); }
+body.dark .pay-sect { background: var(--bg2); color: var(--text); }
+body.dark .pay-opt { background: var(--bg2); border-bottom-color: var(--border); }
+body.dark .pay-lbl { color: var(--text); }
+body.dark .empty-title { color: var(--text); }
+body.dark .prof-stats { background: var(--card); }
+body.dark .material-item { border-bottom-color: var(--border); }
+body.dark .material-name { color: var(--text); }
+body.dark .test-placeholder { background: var(--bg3); }
