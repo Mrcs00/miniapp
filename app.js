@@ -1,21 +1,21 @@
 const COURSES = {
   boshlangich: [
-    { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#F5A623', bolimlar:8, dars:20, soat:10, img:'images/1a.jpg' },
-    { id:'1B', name:'SNU 1B', level:"Boshlang'ich daraja", color:'#4CAF50', bolimlar:8, dars:25, soat:12, img:'images/1b.jpg' },
-    { id:'2A', name:'SNU 2A', level:"Boshlang'ich daraja", color:'#2196F3', bolimlar:8, dars:24, soat:11, img:'images/2a.jpg' },
-    { id:'2B', name:'SNU 2B', level:"Boshlang'ich daraja", color:'#00BCD4', bolimlar:8, dars:24, soat:11, img:'images/2b.jpg' },
+    { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#F5A623', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
+    { id:'1B', name:'SNU 1B', level:"Boshlang'ich daraja", color:'#4CAF50', bolimlar:8, dars:25, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1b.jpg' },
+    { id:'2A', name:'SNU 2A', level:"Boshlang'ich daraja", color:'#2196F3', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2a.jpg' },
+    { id:'2B', name:'SNU 2B', level:"Boshlang'ich daraja", color:'#00BCD4', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2b.jpg' },
   ],
   orta: [
-    { id:'3A', name:'SNU 3A', level:"O'rta daraja",        color:'#9C27B0', bolimlar:8, dars:20, soat:10, img:'images/3a.jpg' },
-    { id:'3B', name:'SNU 3B', level:"O'rta daraja",        color:'#E91E63', bolimlar:8, dars:20, soat:10, img:'images/3b.jpg' },
-    { id:'4A', name:'SNU 4A', level:"O'rta daraja",        color:'#FF5722', bolimlar:8, dars:24, soat:12, img:'images/4a.jpg' },
-    { id:'4B', name:'SNU 4B', level:"O'rta daraja",        color:'#1565C0', bolimlar:8, dars:24, soat:12, img:'images/4b.jpg' },
+    { id:'3A', name:'SNU 3A', level:"O'rta daraja",        color:'#9C27B0', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/3a.jpg' },
+    { id:'3B', name:'SNU 3B', level:"O'rta daraja",        color:'#E91E63', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/3b.jpg' },
+    { id:'4A', name:'SNU 4A', level:"O'rta daraja",        color:'#FF5722', bolimlar:8, dars:24, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/4a.jpg' },
+    { id:'4B', name:'SNU 4B', level:"O'rta daraja",        color:'#1565C0', bolimlar:8, dars:24, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/4b.jpg' },
   ],
   yuqori: [
-    { id:'5A', name:'SNU 5A', level:"Yuqori daraja",       color:'#1A237E', bolimlar:8, dars:20, soat:10, img:'images/5a.jpg' },
-    { id:'5B', name:'SNU 5B', level:"Yuqori daraja",       color:'#1B5E20', bolimlar:8, dars:20, soat:10, img:'images/5b.jpg' },
-    { id:'6A', name:'SNU 6A', level:"Yuqori daraja",       color:'#880E4F', bolimlar:8, dars:24, soat:12, img:'images/6a.jpg' },
-    { id:'6B', name:'SNU 6B', level:"Yuqori daraja",       color:'#4E342E', bolimlar:8, dars:24, soat:12, img:'images/6b.jpg' },
+    { id:'5A', name:'SNU 5A', level:"Yuqori daraja",       color:'#1A237E', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/5a.jpg' },
+    { id:'5B', name:'SNU 5B', level:"Yuqori daraja",       color:'#1B5E20', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/5b.jpg' },
+    { id:'6A', name:'SNU 6A', level:"Yuqori daraja",       color:'#880E4F', bolimlar:8, dars:24, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/6a.jpg' },
+    { id:'6B', name:'SNU 6B', level:"Yuqori daraja",       color:'#4E342E', bolimlar:8, dars:24, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/6b.jpg' },
   ],
 };
 
