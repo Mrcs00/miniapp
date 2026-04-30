@@ -1,3 +1,20 @@
+// ── TUNGI REJIM ──
+function toggleDarkMode() {
+  var body = document.body;
+  body.classList.toggle('dark');
+  var isDark = body.classList.contains('dark');
+  localStorage.setItem('darkMode', isDark ? '1' : '0');
+  var btn = document.getElementById('dark-toggle');
+  if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+}
+
+// Saqlangan rejimni yuklash
+(function() {
+  if (localStorage.getItem('darkMode') === '1') {
+    document.body.classList.add('dark');
+  }
+})();
+
 const COURSES = {
   boshlangich: [
     { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#FEDD00', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
