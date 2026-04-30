@@ -1,0 +1,315 @@
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f5;max-width:430px;margin:0 auto;overflow-x:hidden;color:#1a1a2e}
+
+/* PAGE */
+.page{display:none;flex-direction:column;min-height:100vh;background:#f5f5f5}
+.page.active{display:flex}
+.page-scroll{flex:1;overflow-y:auto;padding-bottom:80px}
+
+/* TOPBAR HOME */
+.topbar-home{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff}
+.logo{font-size:22px;font-weight:700}
+.logo-kc{color:#1a1a2e}
+.logo-study{color:#F5A623}
+.notif{font-size:20px;cursor:pointer}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-bottom:0.5px solid #f0f0f0;position:sticky;top:0;z-index:10;flex-shrink:0}
+.t-title{font-size:16px;font-weight:600;color:#1a1a2e}
+.back{font-size:28px;color:#1a1a2e;cursor:pointer;font-weight:300;line-height:1}
+
+/* BOTTOM NAV */
+.bottom-nav{display:flex;background:#fff;border-top:0.5px solid #f0f0f0;padding:8px 0 6px;flex-shrink:0}
+.bn-svg{width:22px;height:22px;color:#bbb;display:block;margin:0 auto}
+.bn.active .bn-svg{color:#F5A623}
+.bn{flex:1;text-align:center;cursor:pointer;padding:2px 0}
+.bnl{font-size:10px;color:#bbb;margin-top:2px}
+.bn.active .bnl{color:#F5A623}
+
+/* BANNER */
+.banner{margin:12px;border-radius:18px;overflow:hidden;position:relative;height:180px;background:#1a1a2e}
+.banner-img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.5}
+.banner-text{position:relative;z-index:1;padding:20px}
+.banner-text h1{font-size:18px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px}
+.banner-text p{font-size:11px;color:rgba(255,255,255,0.8);margin-bottom:14px}
+.banner-btn{display:inline-flex;align-items:center;gap:6px;background:#F5A623;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;cursor:pointer}
+
+/* LEVEL TABS */
+.level-tabs{display:flex;gap:8px;padding:12px;background:#fff}
+.lv-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:12px 8px;border-radius:14px;background:#f5f5f5;cursor:pointer;border:none;transition:all 0.2s}
+.lv-tab.active{background:#FFB800}
+.lv-icon{font-size:22px;margin-bottom:4px}
+.lv-name{font-size:11px;color:#666;text-align:center;font-weight:500;line-height:1.3}
+.lv-tab.active .lv-name{color:#fff;font-weight:600}
+.lv-tab.active .lv-icon{filter:brightness(10)}
+
+/* COURSES SECTION */
+.courses-section{padding:14px 12px 0}
+.cs-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cs-title{font-size:15px;font-weight:600;color:#1a1a2e}
+.cs-link{font-size:13px;color:#F5A623;cursor:pointer}
+
+/* COURSE CARD */
+.course-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.cc-book{width:70px;height:90px;border-radius:10px;overflow:hidden;flex-shrink:0}
+.cc-book img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.cc-body{flex:1}
+.cc-name{font-size:14px;font-weight:600;color:#1a1a2e}
+.cc-meta{font-size:12px;color:#888;margin:3px 0}
+.cc-price{font-size:14px;font-weight:700;color:#1a1a2e;margin-top:4px}
+.cc-btn{background:#F5A623;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0}
+
+/* ALL COURSES */
+.level-group{margin-bottom:4px}
+.lg-hero{padding:16px;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;height:100px;position:relative;overflow:hidden}
+.lg-hero img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0.4}
+.lg-hero-content{position:relative;z-index:1}
+.lg-title{font-size:18px;font-weight:700;color:#fff}
+.lg-sub-books{display:flex;gap:6px;margin-top:8px}
+.mini-book{width:36px;height:46px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+
+/* ── KURS DETAIL YANGI DIZAYN ── */
+#page-course-detail{display:none;flex-direction:column;min-height:100vh;background:#f5f5f5}
+#page-course-detail.active{display:flex}
+
+/* Detail topbar */
+.cd-topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;z-index:10;flex-shrink:0}
+.cd-back{font-size:28px;color:#fff;cursor:pointer;font-weight:300;line-height:1}
+.cd-title{font-size:17px;font-weight:700;color:#fff}
+.cd-bookmark{font-size:20px;cursor:pointer}
+
+/* Detail hero banner */
+.cd-hero{display:flex;align-items:center;gap:16px;padding:20px 16px 28px;flex-shrink:0}
+.cd-hero-book{width:110px;height:145px;border-radius:14px;overflow:hidden;flex-shrink:0;background:rgba(255,255,255,0.2);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+.cd-hero-book img{width:100%;height:100%;object-fit:cover}
+.cd-hero-info{flex:1}
+.cd-hero-name{font-size:26px;font-weight:800;color:#fff;margin-bottom:6px}
+.cd-hero-level{font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:12px}
+.cd-hero-meta{display:flex;flex-direction:column;gap:6px}
+.cd-hero-meta span{font-size:13px;color:rgba(255,255,255,0.9);display:flex;align-items:center;gap:6px}
+
+/* Bo'limlar bo'limi */
+.cd-bolimlar{background:#fff;border-radius:20px 20px 0 0;flex:1;margin-top:-14px;padding:20px 16px 0}
+.cd-bolim-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.cd-bolim-icon{font-size:18px}
+.cd-bolim-count{font-size:15px;font-weight:600;color:#1a1a2e}
+
+/* Bo'lim item */
+.cd-bolim-item{background:#fff;border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.cd-bolim-row{display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer}
+.cd-bolim-num{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;transition:all 0.2s}
+.cd-bolim-name{flex:1;font-size:14px;font-weight:500;color:#1a1a2e}
+.cd-bolim-arrow{font-size:22px;color:#aaa;transition:transform 0.25s;font-weight:300}
+
+/* Darslar (kengaytirilganda) */
+.cd-darslar{background:#fafafa;border-top:0.5px solid #f0f0f0}
+.cd-dars-item{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:0.5px solid #f0f0f0}
+.cd-dars-item:last-child{border-bottom:none}
+.cd-dars-num{width:30px;height:30px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#888;flex-shrink:0;font-weight:500}
+.cd-dars-name{flex:1;font-size:13px;color:#444}
+.cd-dars-lock{font-size:14px;color:#ccc}
+
+/* BUY BAR */
+.buy-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-top:0.5px solid #f0f0f0;flex-shrink:0}
+.buy-lbl{font-size:11px;color:#888}
+.buy-price{font-size:20px;font-weight:700;color:#1a1a2e}
+.buy-btn{background:#F5A623;color:#fff;border:none;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer}
+
+/* PAYMENT */
+.pay-header{padding:18px 16px;background:#fff}
+.pay-name{font-size:17px;font-weight:600;color:#1a1a2e}
+.pay-meta{font-size:13px;color:#888;margin:4px 0 8px}
+.pay-price{font-size:24px;font-weight:700;color:#F5A623}
+.sep{height:8px;background:#f5f5f5}
+.pay-sect{font-size:14px;font-weight:600;color:#1a1a2e;padding:16px 16px 10px;background:#fff}
+.pay-opt{display:flex;align-items:center;gap:14px;padding:16px;background:#fff;border-bottom:0.5px solid #f5f5f5;cursor:pointer}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid #ddd;flex-shrink:0;position:relative}
+.radio.on{border-color:#F5A623}
+.radio.on::after{content:'';position:absolute;width:12px;height:12px;background:#F5A623;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+.pay-lbl{flex:1;font-size:14px;color:#1a1a2e}
+.pay-logo{font-size:15px;font-weight:800}
+.click-c{color:#00ADEF}
+.payme-c{color:#2196F3}
+.uzcard-c{color:#0056A6}
+.visa-c{color:#1A1F71}
+.cont-btn{display:block;width:calc(100% - 32px);margin:20px 16px 0;background:#F5A623;color:#fff;border:none;padding:15px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer}
+.secure{text-align:center;font-size:12px;color:#aaa;padding:14px 16px}
+
+/* MY COURSES EMPTY */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center}
+.empty-icon{font-size:56px;margin-bottom:16px}
+.empty-title{font-size:16px;font-weight:600;color:#1a1a2e;margin-bottom:6px}
+.empty-sub{font-size:13px;color:#888;margin-bottom:20px}
+.empty-btn{background:#F5A623;color:#fff;border:none;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer}
+
+/* TOPIK */
+.topik-card{background:#fff;border-radius:18px;margin:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.tc-hero{padding:24px 20px;position:relative;height:130px;display:flex;flex-direction:column;justify-content:center}
+.tc-title{font-size:28px;font-weight:800;color:#fff}
+.tc-sub{font-size:13px;color:rgba(255,255,255,0.85);margin-top:4px}
+.tc-body{padding:16px 20px}
+.tc-meta{font-size:13px;color:#888;margin-bottom:8px}
+.tc-price{font-size:20px;font-weight:700;color:#1a1a2e;margin-bottom:14px}
+.tc-btn{background:#F5A623;color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;width:100%}
+
+/* PROFILE */
+.prof-hero{background:linear-gradient(135deg,#1a1a2e,#2d2b55);padding:30px 16px 24px;text-align:center}
+.prof-av{width:76px;height:76px;background:#F5A623;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;margin:0 auto 12px}
+.prof-name{font-size:20px;font-weight:600;color:#fff}
+.prof-sub{font-size:13px;color:rgba(255,255,255,0.7);margin-top:4px}
+.prof-stats{display:flex;background:#fff;margin:14px 16px;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.ps{flex:1;text-align:center}
+.ps-n{font-size:22px;font-weight:700;color:#F5A623}
+.ps-l{font-size:11px;color:#aaa;margin-top:4px}
+
+/* ESKI BOLIMLAR (boshqa sahifalar uchun) */
+.bolim-item{background:#fff;border-bottom:0.5px solid #f5f5f5}
+.bolim-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer}
+.bolim-num{width:32px;height:32px;border-radius:50%;background:#FFC933;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#fff;flex-shrink:0}
+.bolim-name{flex:1;font-size:14px;font-weight:500;color:#1a1a2e}
+.bolim-arrow{font-size:20px;color:#aaa;transition:transform 0.2s}
+.bolim-darslar{background:#f9f9f9;padding:0 16px}
+.dars-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:0.5px solid #f0f0f0}
+.dars-item:last-child{border-bottom:none}
+.dars-num{width:28px;height:28px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#888;flex-shrink:0}
+.dars-name{flex:1;font-size:13px;color:#444}
+.dars-time{font-size:12px;color:#aaa}
+
+/* ── DARS SAHIFASI ── */
+#page-dars { background: #f5f5f5; }
+
+.dars-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; position: sticky; top: 0; z-index: 10; flex-shrink: 0;
+}
+.dars-back { font-size: 28px; color: #fff; cursor: pointer; font-weight: 300; line-height: 1; }
+.dars-title { font-size: 14px; font-weight: 700; color: #fff; flex: 1; text-align: center; }
+.dars-counter { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 500; }
+
+/* Video wrap */
+.dars-video-wrap {
+  position: relative; width: 100%; padding-top: 56.25%; background: #000; flex-shrink: 0;
+}
+.dars-video-placeholder {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px; cursor: pointer;
+  background: #111;
+}
+.dars-play-btn {
+  width: 60px; height: 60px; border-radius: 50%; background: rgba(245,166,35,0.9);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s;
+}
+.dars-play-btn:active { transform: scale(0.92); }
+.dars-play-icon {
+  width: 0; height: 0;
+  border-top: 13px solid transparent; border-bottom: 13px solid transparent;
+  border-left: 22px solid #fff; margin-left: 5px;
+}
+.dars-play-hint { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+.dars-progress-bar {
+  position: absolute; bottom: 28px; left: 12px; right: 12px;
+  height: 3px; background: rgba(255,255,255,0.25); border-radius: 2px;
+}
+.dars-progress-fill { height: 100%; background: #F5A623; border-radius: 2px; transition: width 0.3s; }
+.dars-time-row {
+  position: absolute; bottom: 8px; left: 12px; right: 12px;
+  display: flex; justify-content: space-between;
+}
+.dars-time-row span { font-size: 11px; color: rgba(255,255,255,0.6); }
+
+/* Info qism */
+.dars-info { background: #fff; border-radius: 20px 20px 0 0; margin-top: -14px; padding: 18px 16px 0; flex: 1; }
+.dars-name { font-size: 16px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+.dars-meta { font-size: 12px; color: #888; margin-bottom: 14px; }
+
+/* Tablar */
+.dars-tabs { display: flex; border-bottom: 1.5px solid #f0f0f0; margin-bottom: 14px; }
+.dars-tab {
+  padding: 9px 16px; font-size: 13px; font-weight: 500; color: #888;
+  cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1.5px;
+  transition: all 0.2s;
+}
+.dars-tab.active { color: #F5A623; border-bottom-color: #F5A623; font-weight: 600; }
+
+/* Tab content */
+.dars-tab-content { padding-bottom: 16px; }
+.dars-tab-content p { font-size: 13px; color: #555; line-height: 1.7; }
+
+/* Material item */
+.material-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0; border-bottom: 0.5px solid #f5f5f5;
+}
+.material-icon { font-size: 24px; }
+.material-name { flex: 1; font-size: 13px; color: #1a1a2e; }
+.material-btn {
+  background: #FFF3DC; color: #F5A623; border: none;
+  padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+
+/* Test placeholder */
+.test-placeholder {
+  text-align: center; padding: 30px 16px;
+  background: #f9f9f9; border-radius: 14px; margin-top: 4px;
+}
+
+/* Nav tugmalar */
+.dars-nav { display: flex; gap: 10px; padding: 16px 0 24px; }
+.dars-nav-prev {
+  flex: 1; padding: 13px; border-radius: 12px;
+  border: 1.5px solid #F5A623; background: #fff;
+  color: #F5A623; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.dars-nav-next {
+  flex: 2; padding: 13px; border-radius: 12px;
+  border: none; background: #F5A623;
+  color: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+
+/* Dars item play button */
+.cd-dars-play {
+  width: 28px; height: 28px; border-radius: 50%; background: #FFF3DC;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #F5A623; flex-shrink: 0;
+}
+.cd-dars-time { font-size: 12px; color: #aaa; }
+
+/* ── BO'LIM SAHIFASI ── */
+.bl-hero {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 16px 28px; flex-shrink: 0;
+}
+.bl-hero-num {
+  width: 60px; height: 60px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 800; flex-shrink: 0;
+}
+.bl-hero-info { flex: 1; }
+.bl-hero-name { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.bl-hero-course { font-size: 13px; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+.bl-hero-meta { font-size: 12px; color: rgba(255,255,255,0.7); }
+
+.bl-darslar {
+  background: #fff; border-radius: 20px 20px 0 0;
+  margin-top: -14px; padding: 16px; flex: 1;
+}
+
+.bl-dars-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 12px; border-radius: 14px; margin-bottom: 10px;
+  background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+  cursor: pointer; transition: transform 0.12s;
+}
+.bl-dars-item:active { transform: scale(0.98); }
+.bl-dars-left { display: flex; align-items: center; gap: 14px; }
+.bl-dars-play {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+
+.bl-dars-name { font-size: 15px; font-weight: 600; color: #1a1a2e; }
+.bl-dars-meta { font-size: 12px; color: #888; margin-top: 2px; }
+.bl-dars-arrow { font-size: 20px; color: #ccc; }
