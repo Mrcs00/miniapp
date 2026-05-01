@@ -91,7 +91,6 @@
       <span class="cd-bookmark">🔖</span>
     </div>
     <div class="page-scroll" id="detail-scroll">
-      <!-- Hero banner -->
       <div class="cd-hero" id="cd-hero">
         <div class="cd-hero-book" id="cd-hero-book">
           <img id="cd-hero-img" src="" alt="">
@@ -106,7 +105,6 @@
         </div>
       </div>
 
-      <!-- Bo'limlar -->
       <div class="cd-bolimlar">
         <div class="cd-bolim-header">
           <span class="cd-bolim-icon">📋</span>
@@ -118,7 +116,6 @@
       <div style="height:100px"></div>
     </div>
 
-    <!-- Buy bar -->
     <div class="buy-bar">
       <div>
         <div class="buy-lbl">Narxi</div>
@@ -194,7 +191,8 @@
   <!-- ── BO'LIM SAHIFASI ── -->
   <div class="page" id="page-bolim">
     <div class="cd-topbar" id="bolim-topbar">
-      <span class="cd-back" onclick="showPage('course-detail')">&#8249;</span>
+      <!-- ✅ FIX: goBackFromBolim() — alifbodan kelsa home ga, kursdan kelsa course-detail ga -->
+      <span class="cd-back" onclick="goBackFromBolim()">&#8249;</span>
       <span class="cd-title" id="bolim-page-title">1-bo'lim</span>
       <span></span>
     </div>
@@ -207,7 +205,10 @@
           <div class="bl-hero-meta">4 ta dars</div>
         </div>
       </div>
-      <div class="bl-darslar" id="bl-darslar-list"></div>
+      <!-- ✅ FIX: to'g'ri struktura — tashqi div bl-darslar, ichki div bl-darslar-list -->
+      <div class="bl-darslar">
+        <div id="bl-darslar-list"></div>
+      </div>
       <div style="height:30px"></div>
     </div>
   </div>
@@ -288,7 +289,6 @@
 
     <div class="page-scroll" style="padding-bottom:0">
 
-      <!-- Video player -->
       <div class="dars-video-wrap" id="dars-video-wrap">
         <div class="dars-video-placeholder" id="dars-video-placeholder" onclick="playVideo()">
           <div class="dars-play-btn">
@@ -297,7 +297,6 @@
           <span class="dars-play-hint">Videoni bosing</span>
         </div>
         <iframe id="dars-iframe" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;border:none;" allowfullscreen allow="autoplay"></iframe>
-        <!-- Progress bar -->
         <div class="dars-progress-bar">
           <div class="dars-progress-fill" id="dars-progress-fill" style="width:0%"></div>
         </div>
@@ -307,21 +306,18 @@
         </div>
       </div>
 
-      <!-- Info qism -->
       <div class="dars-info">
         <div class="dars-name" id="dars-name">1-dars: Tanishish</div>
         <div class="dars-meta" id="dars-meta">1-bo'lim · 9 daqiqa</div>
 
-        <!-- Tablar -->
         <div class="dars-tabs">
           <div class="dars-tab active" onclick="setDarsTab('tavsif', this)">Tavsif</div>
           <div class="dars-tab" onclick="setDarsTab('material', this)">Materiallar</div>
           <div class="dars-tab" onclick="setDarsTab('test', this)">Test</div>
         </div>
 
-        <!-- Tab content -->
         <div id="dars-tab-tavsif" class="dars-tab-content">
-          <p id="dars-tavsif-text">Bu darsda koreys tilida o'zini tanishtirish iboralari o'rganiladi. Asosiy so'zlashuv ko'nikmalari va talaffuz mashqlari mavjud.</p>
+          <p id="dars-tavsif-text">Bu darsda koreys tilida o'zini tanishtirish iboralari o'rganiladi.</p>
         </div>
         <div id="dars-tab-material" class="dars-tab-content" style="display:none">
           <div class="material-item">
@@ -343,7 +339,6 @@
           </div>
         </div>
 
-        <!-- Nav tugmalar -->
         <div class="dars-nav">
           <button class="dars-nav-prev" id="dars-prev-btn" onclick="prevDars()">‹ Oldingi</button>
           <button class="dars-nav-next" id="dars-next-btn" onclick="nextDars()">Keyingi dars ›</button>
