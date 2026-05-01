@@ -440,7 +440,7 @@ function playVideo() {
   var placeholder = document.getElementById('dars-video-placeholder');
   var iframe = document.getElementById('dars-iframe');
   if (!placeholder || !iframe) return;
-  var demoVideoId = 'dQw4w9WgXcQ';
+  var demoVideoId = 'yWKe1Ml3ZlI';
   iframe.src = 'https://www.youtube.com/embed/' + demoVideoId + '?autoplay=1';
   placeholder.style.display = 'none';
   iframe.style.display = 'block';
