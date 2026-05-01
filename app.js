@@ -635,7 +635,8 @@ if (contBtn) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// Sahifa yuklangandan keyin render qilish
+window.onload = function() {
   renderHomeCourses('boshlangich');
   renderAllCourses();
-});
+};
