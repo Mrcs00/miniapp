@@ -400,3 +400,18 @@ body.dark .lv-name { color: #aaa; }
 .lv-bepul-text { font-size: 10px; color: #27AE60; font-weight: 600; margin-top: 2px; }
 .lv-tab-alifbo.active .lv-bepul-text { color: #1a1a2e; }
 .lv-tab-alifbo.active .lv-bepul-badge { background: #1a1a2e; }
+
+/* Alifbo tab icon 2x2 grid */
+.lv-tab-alifbo .lv-icon {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  gap: 1px;
+  color: #9B59B6;
+}
+.lv-tab-alifbo.active .lv-icon {
+  color: #1a1a2e;
+}
