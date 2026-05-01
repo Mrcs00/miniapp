@@ -386,3 +386,17 @@ body.dark .lv-tab { background: #2a2a2a; }
 body.dark .lv-tab.active { background: #FEDD00; }
 body.dark .lv-tab.active .lv-name { color: #1a1a2e; }
 body.dark .lv-name { color: #aaa; }
+
+/* ── ALIFBO TAB ── */
+.level-tabs { overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
+.level-tabs::-webkit-scrollbar { display: none; }
+.lv-tab { flex-shrink: 0; position: relative; }
+.lv-tab-alifbo { min-width: 100px; }
+.lv-bepul-badge {
+  position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+  background: #9B59B6; color: #fff; font-size: 9px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; white-space: nowrap; z-index: 1;
+}
+.lv-bepul-text { font-size: 10px; color: #27AE60; font-weight: 600; margin-top: 2px; }
+.lv-tab-alifbo.active .lv-bepul-text { color: #1a1a2e; }
+.lv-tab-alifbo.active .lv-bepul-badge { background: #1a1a2e; }
