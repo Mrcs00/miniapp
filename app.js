@@ -635,5 +635,7 @@ if (contBtn) {
   });
 }
 
-renderHomeCourses('boshlangich');
-renderAllCourses();
+document.addEventListener('DOMContentLoaded', function() {
+  renderHomeCourses('boshlangich');
+  renderAllCourses();
+});
