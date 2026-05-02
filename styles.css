@@ -421,3 +421,21 @@ body.dark .page { background-color: #0f0f0f !important; }
 body.dark #page-course-detail { background-color: #0f0f0f !important; }
 body.dark #page-bolim { background-color: #0f0f0f !important; }
 body.dark #page-dars { background-color: #0f0f0f !important; }
+
+/* Tungi rejimda sariq accent */
+body.dark .cc-btn { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .buy-btn { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .banner-btn { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .cont-btn { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .empty-btn { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .tc-btn { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .dars-nav-next { background: #FEDD00 !important; color: #1a1a2e !important; }
+body.dark .dars-nav-prev { border-color: #FEDD00 !important; color: #FEDD00 !important; }
+body.dark .lv-tab.active { background: #FEDD00 !important; }
+body.dark .lv-tab.active .lv-name { color: #1a1a2e !important; }
+body.dark .cs-link { color: #FEDD00 !important; }
+body.dark .pay-price { color: #FEDD00 !important; }
+body.dark .ps-n { color: #FEDD00 !important; }
+body.dark .bn.active .bn-svg { color: #FEDD00 !important; }
+body.dark .bn.active .bnl { color: #FEDD00 !important; }
+body.dark .dars-tab.active { color: #FEDD00 !important; border-bottom-color: #FEDD00 !important; }
