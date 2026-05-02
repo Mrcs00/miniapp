@@ -44,6 +44,51 @@
         <div class="lv-name">Yuqori daraja</div>
       </div>
     </div>
+    <!-- Progress bo'limi -->
+    <div class="progress-section">
+      <div class="ps-header">
+        <span class="ps-title">Progress</span>
+        <span class="cs-link" onclick="showPage('my-courses')">Barchasi ›</span>
+      </div>
+      <div class="progress-card">
+        <div class="progress-circle-wrap">
+          <svg viewBox="0 0 100 100" class="progress-svg">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#f0f0f0" stroke-width="10"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#42A5F5" stroke-width="10"
+              stroke-dasharray="251.2" stroke-dashoffset="87.9"
+              stroke-linecap="round" transform="rotate(-90 50 50)" id="progress-circle"/>
+          </svg>
+          <div class="progress-text">
+            <div class="progress-num" id="progress-num">65%</div>
+            <div class="progress-label">Umumiy<br>progress</div>
+          </div>
+        </div>
+        <div class="progress-stats">
+          <div class="pstat">
+            <div class="pstat-icon">📚</div>
+            <div class="pstat-info">
+              <div class="pstat-val" id="stat-kurslar">3 kurs</div>
+              <div class="pstat-lbl">O'rganilayotgan</div>
+            </div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-icon">🏆</div>
+            <div class="pstat-info">
+              <div class="pstat-val" id="stat-yutuq">12</div>
+              <div class="pstat-lbl">Yutuqlar</div>
+            </div>
+          </div>
+          <div class="pstat">
+            <div class="pstat-icon">🔥</div>
+            <div class="pstat-info">
+              <div class="pstat-val" id="stat-streak">7 kun</div>
+              <div class="pstat-lbl">Ketma-ketlik</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="courses-section">
       <div class="cs-header">
         <span class="cs-title" id="level-title">Boshlang'ich daraja kurslari</span>
