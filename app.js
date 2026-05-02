@@ -1,4 +1,12 @@
 // ── TUNGI REJIM ──
+var DAY_IMG = 'https://raw.githubusercontent.com/Mrcs00/miniapp/main/banner-day.jpg';
+var NIGHT_IMG = 'https://raw.githubusercontent.com/Mrcs00/miniapp/main/banner-night.jpg';
+
+function updateBannerImg(isDark) {
+  var img = document.getElementById('banner-img');
+  if (img) img.src = isDark ? NIGHT_IMG : DAY_IMG;
+}
+
 function toggleDarkMode() {
   var body = document.body;
   body.classList.toggle('dark');
@@ -6,18 +14,26 @@ function toggleDarkMode() {
   localStorage.setItem('darkMode', isDark ? '1' : '0');
   var btn = document.getElementById('dark-toggle');
   if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+  updateBannerImg(isDark);
 }
 
-// Saqlangan rejimni yuklash
-(function() {
-  if (localStorage.getItem('darkMode') === '1') {
-    document.body.classList.add('dark');
-  }
-})();
+// Dark mode init - pastda chaqiriladi
+
+const ALIFBO = {
+  id: 'alifbo',
+  name: "Alifbo va o'qish qoidalari",
+  color: '#9B59B6',
+  bepul: true,
+  bolimlar: [
+    { id: 'harflar', name: 'Harflar', icon: '🔤', dars: 1 },
+    { id: 'oqish',   name: "O'qish qoidalari", icon: '📖', dars: 1 },
+    { id: 'yozish',  name: 'Yozish qoidalari', icon: '✍️', dars: 1 },
+  ]
+};
 
 const COURSES = {
   boshlangich: [
-    { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#FEDD00', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
+    { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#42A5F5', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
     { id:'1B', name:'SNU 1B', level:"Boshlang'ich daraja", color:'#4CAF50', bolimlar:8, dars:25, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1b.jpg' },
     { id:'2A', name:'SNU 2A', level:"Boshlang'ich daraja", color:'#2196F3', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2a.jpg' },
     { id:'2B', name:'SNU 2B', level:"Boshlang'ich daraja", color:'#00BCD4', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2b.jpg' },
@@ -87,8 +103,119 @@ function setLevel(level, el) {
   for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
   el.classList.add('active');
   var title = document.getElementById('level-title');
-  if (title) title.textContent = LEVEL_NAMES[level] + ' kurslari';
-  renderHomeCourses(level);
+  if (level === 'alifbo') {
+    if (title) title.textContent = "Alifbo va o'qish qoidalari";
+    renderAlifbo();
+  } else {
+    if (title) title.textContent = LEVEL_NAMES[level] + ' kurslari';
+    renderHomeCourses(level);
+  }
+}
+
+function renderAlifbo() {
+  var list = document.getElementById('home-course-list');
+  if (!list) return;
+  var html = '';
+  for (var i = 0; i < ALIFBO.bolimlar.length; i++) {
+    var b = ALIFBO.bolimlar[i];
+    html += '<div class="course-card alifbo-card" onclick="openAlifboBolim(\'' + b.id + '\')">' +
+      '<div class="cc-book" style="background:' + ALIFBO.color + ';display:flex;align-items:center;justify-content:center;font-size:24px">' +
+      b.icon +
+      '</div>' +
+      '<div class="cc-body">' +
+      '<div class="cc-name">' + b.name + '</div>' +
+      '<div class="cc-meta">📚 ' + b.dars + ' dars</div>' +
+      '<div class="cc-price" style="color:#27AE60;font-size:13px">✅ Bepul</div>' +
+      '</div>' +
+      '<button class="cc-btn" style="background:' + ALIFBO.color + '" onclick="event.stopPropagation();openAlifboBolim(\'' + b.id + '\')">Ko\'rish</button>' +
+      '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function openAlifboBolim(bolimId) {
+  var bolim = null;
+  for (var i = 0; i < ALIFBO.bolimlar.length; i++) {
+    if (ALIFBO.bolimlar[i].id === bolimId) { bolim = ALIFBO.bolimlar[i]; break; }
+  }
+  if (!bolim) return;
+
+  // Bo'lim sahifasini ochamiz
+  var topbar = document.getElementById('bolim-topbar');
+  if (topbar) topbar.style.background = ALIFBO.color;
+
+  var title = document.getElementById('bolim-page-title');
+  if (title) title.textContent = bolim.name;
+
+  var heroNum = document.getElementById('bl-hero-num');
+  if (heroNum) { heroNum.textContent = bolim.icon; heroNum.style.background = 'rgba(255,255,255,0.25)'; heroNum.style.color = '#fff'; }
+
+  var heroName = document.getElementById('bl-hero-name');
+  if (heroName) heroName.textContent = bolim.name;
+
+  var heroCourse = document.getElementById('bl-hero-course');
+  if (heroCourse) heroCourse.textContent = "Alifbo va o'qish qoidalari";
+
+  var hero = document.getElementById('bl-hero');
+  if (hero) hero.style.background = ALIFBO.color;
+
+  var list = document.getElementById('bl-darslar-list');
+  if (list) {
+    list.innerHTML = '<div class="bl-dars-item" onclick="openAlifboDars(\' + bolimId + \')" >' +
+      '<div class="bl-dars-left">' +
+      '<div class="bl-dars-play" style="background:rgba(155,89,182,0.15);color:' + ALIFBO.color + '">&#9654;</div>' +
+      '<div>' +
+      '<div class="bl-dars-name">1-dars</div>' +
+      '<div class="bl-dars-meta">~10 daqiqa • Bepul</div>' +
+      '</div></div>' +
+      '<div class="bl-dars-arrow">›</div>' +
+      '</div>';
+  }
+
+  showPage('bolim');
+}
+
+function openAlifboDars(bolimId) {
+  var bolim = null;
+  for (var i = 0; i < ALIFBO.bolimlar.length; i++) {
+    if (ALIFBO.bolimlar[i].id === bolimId) { bolim = ALIFBO.bolimlar[i]; break; }
+  }
+  if (!bolim) return;
+
+  currentDars = { courseId: 'alifbo_' + bolimId, bolim: 1, dars: 1 };
+
+  var topbar = document.getElementById('dars-topbar');
+  if (topbar) topbar.style.background = ALIFBO.color;
+
+  var title = document.getElementById('dars-title');
+  if (title) title.textContent = bolim.name + ' — 1-dars';
+
+  var counter = document.getElementById('dars-counter');
+  if (counter) counter.textContent = '1/1';
+
+  var darsName = document.getElementById('dars-name');
+  if (darsName) darsName.textContent = '1-dars: ' + bolim.name;
+
+  var darsMeta = document.getElementById('dars-meta');
+  if (darsMeta) darsMeta.textContent = '~10 daqiqa • Bepul';
+
+  var tavsif = document.getElementById('dars-tavsif-text');
+  if (tavsif) tavsif.textContent = bolim.name + " haqida to'liq ma'lumot va mashqlar.";
+
+  var placeholder = document.getElementById('dars-video-placeholder');
+  var iframe = document.getElementById('dars-iframe');
+  if (placeholder) placeholder.style.display = 'flex';
+  if (iframe) { iframe.style.display = 'none'; iframe.src = ''; }
+
+  var prevBtn = document.getElementById('dars-prev-btn');
+  var nextBtn = document.getElementById('dars-next-btn');
+  if (prevBtn) { prevBtn.style.opacity = '0.4'; prevBtn.style.borderColor = ALIFBO.color; prevBtn.style.color = ALIFBO.color; }
+  if (nextBtn) { nextBtn.textContent = 'Tugatish ✓'; nextBtn.style.background = ALIFBO.color; nextBtn.style.color = '#fff'; }
+
+  var firstTab = document.querySelector('.dars-tab');
+  setDarsTab('tavsif', firstTab);
+
+  showPage('dars');
 }
 
 function courseCardHTML(course) {
@@ -217,6 +344,13 @@ function openCourse(courseId, fromPage) {
   }, 50);
 
   showPage('course-detail');
+}
+
+function isLightColor(hex) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return (r*299 + g*587 + b*114) / 1000 > 128;
 }
 
 function hexToRgba(hex, alpha) {
@@ -373,8 +507,31 @@ function openDars(courseId, bolimNum, darsNum) {
 
   var prevBtn = document.getElementById('dars-prev-btn');
   var nextBtn = document.getElementById('dars-next-btn');
-  if (prevBtn) prevBtn.style.opacity = darsIndex <= 1 ? '0.4' : '1';
-  if (nextBtn) nextBtn.textContent = darsIndex >= totalDars ? 'Tugatish ✓' : 'Keyingi dars ›';
+  if (prevBtn) {
+    prevBtn.style.opacity = darsIndex <= 1 ? '0.4' : '1';
+    prevBtn.style.borderColor = course.color;
+    prevBtn.style.color = course.color;
+  }
+  if (nextBtn) {
+    nextBtn.textContent = darsIndex >= totalDars ? 'Tugatish ✓' : 'Keyingi dars ›';
+    nextBtn.style.background = course.color;
+    nextBtn.style.color = isLightColor(course.color) ? '#1a1a2e' : '#fff';
+  }
+
+  // Tab active rang
+  setTimeout(function() {
+    var activeTabs = document.querySelectorAll('.dars-tab.active');
+    for (var i = 0; i < activeTabs.length; i++) {
+      activeTabs[i].style.color = course.color;
+      activeTabs[i].style.borderBottomColor = course.color;
+    }
+    // Play button rang
+    var playBtn = document.querySelector('.dars-play-btn');
+    if (playBtn) playBtn.style.background = course.color;
+    // Progress rang
+    var fill = document.getElementById('dars-progress-fill');
+    if (fill) fill.style.background = course.color;
+  }, 50);
 
   var firstTab = document.querySelector('.dars-tab');
   setDarsTab('tavsif', firstTab);
@@ -397,7 +554,7 @@ function playVideo() {
   var placeholder = document.getElementById('dars-video-placeholder');
   var iframe = document.getElementById('dars-iframe');
   if (!placeholder || !iframe) return;
-  var demoVideoId = 'dQw4w9WgXcQ';
+  var demoVideoId = 'yWKe1Ml3ZlI';
   iframe.src = 'https://www.youtube.com/embed/' + demoVideoId + '?autoplay=1';
   placeholder.style.display = 'none';
   iframe.style.display = 'block';
@@ -406,14 +563,25 @@ function playVideo() {
 function setDarsTab(tab, el) {
   var tabs = ['tavsif', 'material', 'test'];
   for (var i = 0; i < tabs.length; i++) {
-    var content = document.getElementById('dars-tab-' + tabs[i]);
-    if (content) content.style.display = 'none';
+    var cnt = document.getElementById('dars-tab-' + tabs[i]);
+    if (cnt) cnt.style.display = 'none';
   }
   var allTabs = document.querySelectorAll('.dars-tab');
-  for (var j = 0; j < allTabs.length; j++) allTabs[j].classList.remove('active');
+  for (var j = 0; j < allTabs.length; j++) {
+    allTabs[j].classList.remove('active');
+    allTabs[j].style.color = '';
+    allTabs[j].style.borderBottomColor = '';
+  }
   var activeContent = document.getElementById('dars-tab-' + tab);
   if (activeContent) activeContent.style.display = 'block';
-  if (el) el.classList.add('active');
+  if (el) {
+    el.classList.add('active');
+    var course = findCourse(currentDars.courseId);
+    if (course) {
+      el.style.color = course.color;
+      el.style.borderBottomColor = course.color;
+    }
+  }
 }
 
 function prevDars() {
@@ -458,5 +626,15 @@ if (contBtn) {
   });
 }
 
+// Dark mode init
+var isDark = localStorage.getItem('darkMode') === '1';
+if (isDark) {
+  document.body.classList.add('dark');
+  var btn = document.getElementById('dark-toggle');
+  if (btn) btn.textContent = '☀️';
+}
+updateBannerImg(isDark);
+
+// Render
 renderHomeCourses('boshlangich');
 renderAllCourses();
