@@ -118,7 +118,7 @@ function renderAlifbo() {
   var html = '';
   for (var i = 0; i < ALIFBO.bolimlar.length; i++) {
     var b = ALIFBO.bolimlar[i];
-    html += '<div class="course-card alifbo-card" onclick="openAlifboBolim('' + b.id + '')">' +
+    html += '<div class="course-card alifbo-card" onclick="openAlifboBolim(\'' + b.id + '\')">' +
       '<div class="cc-book" style="background:' + ALIFBO.color + ';display:flex;align-items:center;justify-content:center;font-size:24px">' +
       b.icon +
       '</div>' +
