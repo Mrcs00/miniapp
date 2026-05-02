@@ -416,6 +416,8 @@ body.dark .lv-name { color: #aaa; }
   color: #1a1a2e;
 }
 
-body.dark {
-  background-color: #0f0f0f !important;
-}
+body.dark { background-color: #0f0f0f !important; }
+body.dark .page { background-color: #0f0f0f !important; }
+body.dark #page-course-detail { background-color: #0f0f0f !important; }
+body.dark #page-bolim { background-color: #0f0f0f !important; }
+body.dark #page-dars { background-color: #0f0f0f !important; }
