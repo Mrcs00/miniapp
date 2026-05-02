@@ -415,3 +415,7 @@ body.dark .lv-name { color: #aaa; }
 .lv-tab-alifbo.active .lv-icon {
   color: #1a1a2e;
 }
+
+body.dark {
+  background-color: #0f0f0f !important;
+}
