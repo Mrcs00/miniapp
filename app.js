@@ -17,16 +17,7 @@ function toggleDarkMode() {
   updateBannerImg(isDark);
 }
 
-// Saqlangan rejimni yuklash
-(function() {
-  var isDark = localStorage.getItem('darkMode') === '1';
-  if (isDark) {
-    document.body.classList.add('dark');
-    var btn = document.getElementById('dark-toggle');
-    if (btn) btn.textContent = '☀️';
-  }
-  updateBannerImg(isDark);
-})();
+// Dark mode init - pastda chaqiriladi
 
 const ALIFBO = {
   id: 'alifbo',
@@ -634,6 +625,15 @@ if (contBtn) {
     }
   });
 }
+
+// Dark mode init
+var isDark = localStorage.getItem('darkMode') === '1';
+if (isDark) {
+  document.body.classList.add('dark');
+  var btn = document.getElementById('dark-toggle');
+  if (btn) btn.textContent = '☀️';
+}
+updateBannerImg(isDark);
 
 // Render
 renderHomeCourses('boshlangich');
