@@ -127,7 +127,7 @@ function renderAlifbo() {
       '<div class="cc-meta">📚 ' + b.dars + ' dars</div>' +
       '<div class="cc-price" style="color:#27AE60;font-size:13px">✅ Bepul</div>' +
       '</div>' +
-      '<button class="cc-btn" style="background:' + ALIFBO.color + '" onclick="event.stopPropagation();openAlifboBolim('' + b.id + '')">Ko'rish</button>' +
+      '<button class="cc-btn" style="background:' + ALIFBO.color + '" onclick="event.stopPropagation();openAlifboBolim(\'' + b.id + '\')">Ko\'rish</button>' +
       '</div>';
   }
   list.innerHTML = html;
@@ -161,7 +161,7 @@ function openAlifboBolim(bolimId) {
 
   var list = document.getElementById('bl-darslar-list');
   if (list) {
-    list.innerHTML = '<div class="bl-dars-item" onclick="openAlifboDars('' + bolimId + '')" >' +
+    list.innerHTML = '<div class="bl-dars-item" onclick="openAlifboDars(\' + bolimId + \')" >' +
       '<div class="bl-dars-left">' +
       '<div class="bl-dars-play" style="background:rgba(155,89,182,0.15);color:' + ALIFBO.color + '">&#9654;</div>' +
       '<div>' +
@@ -200,7 +200,7 @@ function openAlifboDars(bolimId) {
   if (darsMeta) darsMeta.textContent = '~10 daqiqa • Bepul';
 
   var tavsif = document.getElementById('dars-tavsif-text');
-  if (tavsif) tavsif.textContent = bolim.name + ' haqida to'liq ma'lumot va mashqlar.';
+  if (tavsif) tavsif.textContent = bolim.name + " haqida to'liq ma'lumot va mashqlar.";
 
   var placeholder = document.getElementById('dars-video-placeholder');
   var iframe = document.getElementById('dars-iframe');
