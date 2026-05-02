@@ -65,7 +65,16 @@
   <div class="topbar">
     <span class="back" onclick="showPage('home')">‹</span>
     <span class="t-title">Kurslar</span>
-    <span></span>
+    <span class="search-btn" onclick="toggleSearch()">🔍</span>
+  </div>
+  <div class="search-bar" id="search-bar" style="display:none">
+    <input type="text" id="search-input" placeholder="Kurs qidiring..." oninput="searchCourses(this.value)">
+  </div>
+  <div class="courses-filter">
+    <div class="cf-tab active" onclick="filterCourses('all', this)">Barchasi</div>
+    <div class="cf-tab" onclick="filterCourses('boshlangich', this)">Boshlang'ich</div>
+    <div class="cf-tab" onclick="filterCourses('orta', this)">O'rta</div>
+    <div class="cf-tab" onclick="filterCourses('yuqori', this)">Yuqori</div>
   </div>
   <div class="page-scroll">
     <div class="all-courses" id="all-course-list"></div>
