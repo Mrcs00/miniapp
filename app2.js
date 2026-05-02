@@ -241,30 +241,73 @@ function renderHomeCourses(level) {
   list.innerHTML = html;
 }
 
-function renderAllCourses() {
+function renderAllCourses(filterLevel) {
   var list = document.getElementById('all-course-list');
   if (!list) return;
   var html = '';
   var levels = Object.keys(COURSES);
   for (var l = 0; l < levels.length; l++) {
     var level = levels[l];
-    var miniBooks = '';
-    for (var m = 0; m < COURSES[level].length; m++) {
-      miniBooks += '<div class="mini-book" style="background:' + COURSES[level][m].color + '">' + COURSES[level][m].id + '</div>';
-    }
-    var cards = '';
+    if (filterLevel && filterLevel !== 'all' && filterLevel !== level) continue;
     for (var c = 0; c < COURSES[level].length; c++) {
-      cards += courseCardHTML(COURSES[level][c]);
+      html += bigCourseCardHTML(COURSES[level][c]);
     }
-    html += '<div class="level-group">' +
-      '<div class="lg-hero" style="background:#1a1a2e">' +
-      '<img src="' + LEVEL_IMAGES[level] + '" alt="' + LEVEL_NAMES[level] + '">' +
-      '<div class="lg-hero-content">' +
-      '<div class="lg-title">' + LEVEL_NAMES[level].toUpperCase() + '</div>' +
-      '<div class="lg-sub-books">' + miniBooks + '</div>' +
-      '</div></div>' + cards + '</div>';
   }
-  list.innerHTML = html;
+  list.innerHTML = html || '<div style="text-align:center;padding:40px;color:#888">Kurs topilmadi</div>';
+}
+
+function bigCourseCardHTML(course) {
+  var progress = 0; // Keyinchalik haqiqiy progress qo'shiladi
+  return '<div class="big-course-card" onclick="openCourse(\'' + course.id + '\',\'courses\')">' +
+    '<div class="bcc-img">' +
+    '<img src="' + course.img + '" alt="' + course.name + '" onerror="this.parentElement.style.background='' + course.color + '';this.style.display='none'">' +
+    '</div>' +
+    '<div class="bcc-body">' +
+    '<div class="bcc-name">' + course.name + '</div>' +
+    '<div class="bcc-meta">📚 ' + course.dars + ' dars · ⏰ ' + course.soat + ' soat</div>' +
+    '<div class="bcc-price">* * * so'm</div>' +
+    '<div class="bcc-progress-wrap">' +
+    '<div class="bcc-progress-bar"><div class="bcc-progress-fill" style="width:' + progress + '%;background:' + course.color + '"></div></div>' +
+    '<span class="bcc-percent">' + progress + '%</span>' +
+    '</div>' +
+    '<button class="bcc-btn" style="background:' + course.color + ';color:' + (isLightColor(course.color) ? '#1a1a2e' : '#fff') + '" onclick="event.stopPropagation();openCourse('' + course.id + '','courses')">Ko'rish</button>' +
+    '</div>' +
+    '</div>';
+}
+
+function filterCourses(level, el) {
+  var tabs = document.querySelectorAll('.cf-tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  if (el) el.classList.add('active');
+  renderAllCourses(level);
+}
+
+function toggleSearch() {
+  var bar = document.getElementById('search-bar');
+  if (bar.style.display === 'none') {
+    bar.style.display = 'block';
+    document.getElementById('search-input').focus();
+  } else {
+    bar.style.display = 'none';
+    renderAllCourses('all');
+  }
+}
+
+function searchCourses(query) {
+  var list = document.getElementById('all-course-list');
+  if (!list) return;
+  query = query.toLowerCase();
+  var html = '';
+  var levels = Object.keys(COURSES);
+  for (var l = 0; l < levels.length; l++) {
+    for (var c = 0; c < COURSES[levels[l]].length; c++) {
+      var course = COURSES[levels[l]][c];
+      if (course.name.toLowerCase().includes(query)) {
+        html += bigCourseCardHTML(course);
+      }
+    }
+  }
+  list.innerHTML = html || '<div style="text-align:center;padding:40px;color:#888">Kurs topilmadi</div>';
 }
 
 // ── Kurs detail ochish (yangi dizayn) ──
