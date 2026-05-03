@@ -71,15 +71,26 @@
     </div>
 
 
-    <div class="level-cards-wrap">
-      <div class="level-cards-scroll">
-        <div class="lv-card lv-card-alifbo" onclick="setLevel('alifbo', this)">
-          <div class="lv-card-img">가나<br>다라</div>
-          <div class="lv-card-body">
-            <div class="lv-card-name">Alifbo va o'qish qoidalari</div>
-            <div class="lv-card-desc">Harflardan boshlang</div>
-            <div class="lv-card-meta">📚 3 dars</div>
-          </div>
+    <div class="level-tabs" style="overflow-x:auto;flex-wrap:nowrap;">
+      <div class="lv-tab lv-tab-alifbo" onclick="setLevel('alifbo', this)">
+        <div class="lv-bepul-badge">BEPUL</div>
+        <div class="lv-icon"><span>가</span><span>나</span><span>다</span><span>라</span></div>
+        <div class="lv-name">Alifbo va o'qish qoidalari</div>
+        <div class="lv-bepul-text">Bepul</div>
+      </div>
+      <div class="lv-tab active" onclick="setLevel('boshlangich', this)">
+        <div class="lv-icon">🎓</div>
+        <div class="lv-name">Boshlang'ich daraja</div>
+      </div>
+      <div class="lv-tab" onclick="setLevel('orta', this)">
+        <div class="lv-icon">📊</div>
+        <div class="lv-name">O'rta daraja</div>
+      </div>
+      <div class="lv-tab" onclick="setLevel('yuqori', this)">
+        <div class="lv-icon">👑</div>
+        <div class="lv-name">Yuqori daraja</div>
+      </div>
+    </div>
           <div class="lv-card-badge">BEPUL</div>
           <button class="lv-card-btn">›</button>
         </div>
