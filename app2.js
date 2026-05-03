@@ -99,8 +99,8 @@ function goBackFromDetail() {
 
 function setLevel(level, el) {
   currentLevel = level;
-  var cards = document.querySelectorAll('.lv-card');
-  for (var i = 0; i < cards.length; i++) cards[i].classList.remove('active');
+  var tabs = document.querySelectorAll('.lv-tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
   if (el) el.classList.add('active');
   var title = document.getElementById('level-title');
   if (level === 'alifbo') {
