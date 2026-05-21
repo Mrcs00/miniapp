@@ -361,13 +361,37 @@ function hexToRgba(hex, alpha) {
 function renderBolimlar(course) {
   var html = '';
   for (var b = 1; b <= course.bolimlar; b++) {
-    html += '<div class="cd-bolim-item" onclick="openBolim(\'' + course.id + '\',' + b + ')">' +
-      '<div class="cd-bolim-row">' +
-      '<div class="cd-bolim-num">' + b + '</div>' +
-      '<div class="cd-bolim-name">' + b + "-bo'lim</div>" +
-      '<div class="cd-bolim-arrow">›</div>' +
-      '</div>' +
-      '</div>';
+    var unlocked = isBolimUnlocked(course.id, b);
+    var completed = isBolimCompleted(course.id, b);
+
+    if (unlocked) {
+      html += '<div class="cd-bolim-item" onclick="openBolim(\'' + course.id + '\',' + b + ')">' +
+        '<div class="cd-bolim-row">' +
+        '<div class="cd-bolim-num">' + b + '</div>' +
+        '<div class="cd-bolim-name">' + b + "-bo'lim" +
+        (completed ? ' <span style="color:#27AE60;font-size:12px">✅</span>' : '') +
+        '</div>' +
+        '<div class="cd-bolim-arrow">›</div>' +
+        '</div>';
+      if (!completed) {
+        html += '<div style="padding:0 16px 12px" onclick="event.stopPropagation()">' +
+          '<button onclick="openLugat(\'' + course.id + '\',' + b + ')" ' +
+          'style="width:100%;padding:10px;background:rgba(66,165,245,0.1);color:#42A5F5;border:1.5px solid #42A5F5;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer">' +
+          '📖 Lug\'at topshirish</button>' +
+          '</div>';
+      }
+      html += '</div>';
+    } else {
+      html += '<div class="cd-bolim-item" style="opacity:0.5">' +
+        '<div class="cd-bolim-row">' +
+        '<div class="cd-bolim-num" style="background:#f0f0f0;color:#aaa">' + b + '</div>' +
+        '<div class="cd-bolim-name">' + b + "-bo'lim</div>" +
+        '<div style="font-size:18px">🔒</div>' +
+        '</div>' +
+        '<div style="padding:0 16px 12px;font-size:12px;color:#aaa">' +
+        (b-1) + "-bo'lim lug'atini topshiring</div>" +
+        '</div>';
+    }
   }
   return html;
 }
