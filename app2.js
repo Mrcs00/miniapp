@@ -610,12 +610,24 @@ function prevDars() {
   openDars(currentDars.courseId, newBolim, newDars);
 }
 
+// YANGI (to'g'ri):
 function nextDars() {
   var course = findCourse(currentDars.courseId);
   if (!course) return;
   var totalDars = course.bolimlar * 4;
   var darsIndex = (currentDars.bolim - 1) * 4 + currentDars.dars;
+
+  // Bo'lim oxirgi darsi tugadimi?
+  var isLastDarsInBolim = (currentDars.dars === 4);
+
   if (darsIndex >= totalDars) { showPage('bolim'); return; }
+
+  // Bo'lim tugasa — lug'at topshirish
+  if (isLastDarsInBolim && !isBolimCompleted(currentDars.courseId, currentDars.bolim)) {
+    openLugat(currentDars.courseId, currentDars.bolim);
+    return;
+  }
+
   darsIndex++;
   var newBolim = Math.ceil(darsIndex / 4);
   var newDars = darsIndex - (newBolim - 1) * 4;
