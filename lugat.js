@@ -263,6 +263,18 @@ function getKvaOffset(courseId) {
   return 0;
 }
 
+
+
+function getLugatByCourse(courseId) {
+  if (courseId === '1A') return LUGAT_1A;
+  if (courseId === '1B') return LUGAT_1B;
+  if (courseId === '2A') return LUGAT_2A;
+  if (courseId === '2B') return LUGAT_2B;
+  if (courseId === '3A') return LUGAT_3A;
+  if (courseId === '3B') return LUGAT_3B;
+  return LUGAT_1A; // default
+}
+
 // Lug'at sahifasini ochish
 function openLugat(courseId, bolimNum) {
   // Lug'at ma'lumotlarini olish
@@ -272,7 +284,7 @@ function openLugat(courseId, bolimNum) {
 
   var bolimLugat = null;
   for (var i = 0; i < lugatData.length; i++) {
-    if (lugatData[i].kva === targetKva) {
+    if (Number(lugatData[i].kva) === Number(targetKva)) {
       bolimLugat = lugatData[i];
       break;
     }
@@ -2871,14 +2883,3 @@ var LUGAT_1B = [
   ]
 }
 ];
-
-// ── KURS ID GA QARAB LUG'AT OLISH ──
-function getLugatByCourse(courseId) {
-  if (courseId === '1A') return LUGAT_1A;
-  if (courseId === '1B') return LUGAT_1B;
-  if (courseId === '2A') return LUGAT_2A;
-  if (courseId === '2B') return LUGAT_2B;
-  if (courseId === '3A') return LUGAT_3A;
-  if (courseId === '3B') return LUGAT_3B;
-  return LUGAT_1A; // default
-}
