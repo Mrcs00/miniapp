@@ -252,16 +252,34 @@ function shuffleArray(arr) {
   return a;
 }
 
+// Kurs uchun kva offset (1B, 2B, 3B lar 1 dan emas, 9 yoki 10 dan boshlanadi)
+function getKvaOffset(courseId) {
+  if (courseId === '1B') return 8;
+  if (courseId === '2B') return 9;
+  if (courseId === '3B') return 9;
+  if (courseId === '4B') return 9;
+  if (courseId === '5B') return 9;
+  if (courseId === '6B') return 9;
+  return 0;
+}
+
 // Lug'at sahifasini ochish
 function openLugat(courseId, bolimNum) {
   // Lug'at ma'lumotlarini olish
   var lugatData = getLugatByCourse(courseId);
+  var offset = getKvaOffset(courseId);
+  var targetKva = bolimNum + offset; // bolimNum + offset = haqiqiy kva
+
   var bolimLugat = null;
   for (var i = 0; i < lugatData.length; i++) {
-    if (lugatData[i].kva === bolimNum) {
+    if (lugatData[i].kva === targetKva) {
       bolimLugat = lugatData[i];
       break;
     }
+  }
+  // Topilmasa — birinchi mavjud bo'limni olish
+  if (!bolimLugat && lugatData.length > 0) {
+    bolimLugat = lugatData[0];
   }
   if (!bolimLugat) return;
 
