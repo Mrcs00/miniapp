@@ -90,6 +90,9 @@ function showPage(pageId) {
     page.classList.add('active');
     page.scrollTop = 0;
   }
+  if (pageId === 'my-courses') {
+    loadMyCourses();
+  }
 }
 
 function goBackFromDetail() {
@@ -632,7 +635,46 @@ function selectPay(el) {
 
 var BACKEND_URL = 'https://miniapp-production-012c.up.railway.app';
 
-// Karta raqamini nusxalash
+// ── MENING KURSLARIM ──
+function loadMyCourses() {
+  var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+  var list = document.getElementById('my-courses-list');
+  if (!list) return;
+
+  if (!userId) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Sizda hali kurslar yo\'q</div><div class="empty-sub">Kurs sotib olib o\'qishni boshlang.</div><button class="empty-btn" onclick="showPage(\'courses\')">Kurslarni ko\'rish</button></div>';
+    return;
+  }
+
+  fetch(BACKEND_URL + '/my-courses?userId=' + userId)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var courses = data.courses || [];
+      if (courses.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Sizda hali kurslar yo\'q</div><div class="empty-sub">Kurs sotib olib o\'qishni boshlang.</div><button class="empty-btn" onclick="showPage(\'courses\')">Kurslarni ko\'rish</button></div>';
+        return;
+      }
+      var html = '<div style="padding:14px 12px 0"><div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">✅ Sizning kurslaringiz</div>';
+      for (var i = 0; i < courses.length; i++) {
+        var courseId = courses[i];
+        var course = findCourse(courseId);
+        if (!course) continue;
+        html += '<div class="big-course-card" onclick="openCourse(\'' + courseId + '\',\'my-courses\')">' +
+          '<div class="bcc-img"><img src="' + course.img + '" alt="' + course.name + '" onerror="this.style.display=\'none\'"></div>' +
+          '<div class="bcc-body">' +
+          '<div class="bcc-name">' + course.name + '</div>' +
+          '<div class="bcc-meta">📚 ' + course.dars + ' dars · ' + course.soat + ' soat</div>' +
+          '<div style="color:#27AE60;font-size:13px;font-weight:600;margin-top:4px">✅ Sotib olingan</div>' +
+          '<button class="bcc-btn" style="background:' + course.color + ';color:#fff;margin-top:6px" onclick="event.stopPropagation();openCourse(\'' + courseId + '\',\'my-courses\')">Davom etish ›</button>' +
+          '</div></div>';
+      }
+      html += '</div>';
+      list.innerHTML = html;
+    })
+    .catch(function() {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Xatolik yuz berdi</div><div class="empty-sub">Qayta urinib ko\'ring.</div></div>';
+    });
+}
 function copyCard() {
   var cardNumber = '9860120173642691';
   if (navigator.clipboard) {
