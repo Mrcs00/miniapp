@@ -630,14 +630,40 @@ function selectPay(el) {
   el.querySelector('.radio').classList.add('on');
 }
 
+var BACKEND_URL = 'https://miniapp-production-012c.up.railway.app';
+
 var contBtn = document.getElementById('cont-btn');
 if (contBtn) {
   contBtn.addEventListener('click', function() {
-    if (tg) {
-      tg.sendData(JSON.stringify({ action: 'payment', course: selectedCourse ? selectedCourse.id : '' }));
-    } else {
-      alert("To'lov amalga oshirildi!\nAdmin tez orada tasdiqlaydi.");
-    }
+    var courseId = selectedCourse ? selectedCourse.id : '';
+    if (!courseId) return;
+
+    var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+    var username = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username || '' : '';
+    var firstName = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name || '' : '';
+
+    var btn = document.getElementById('cont-btn');
+    if (btn) { btn.textContent = "Yuborilmoqda..."; btn.disabled = true; }
+
+    fetch(BACKEND_URL + '/payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: userId, courseId: courseId, username: username, firstName: firstName })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (btn) { btn.textContent = "To'lovni davom ettirish"; btn.disabled = false; }
+      if (data.success) {
+        showPage('home');
+        alert("✅ So'rovingiz qabul qilindi!\n\nKarta raqami va miqdorni botga yuboring.\nAdmin 24 soat ichida tasdiqlaydi.");
+      } else {
+        alert("Xatolik yuz berdi. Qayta urinib ko'ring.");
+      }
+    })
+    .catch(function() {
+      if (btn) { btn.textContent = "To'lovni davom ettirish"; btn.disabled = false; }
+      alert("Xatolik! Internet aloqasini tekshiring.");
+    });
   });
 }
 
