@@ -261,8 +261,8 @@ app.use(function(req, res, next) {
 
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 
-// ── Foydalanuvchi kurslarini olish ──
-app.get('/my-courses', (req, res) => {
+// ── Foydalanuvchi kurslarini olish ── (FIXED: async qo'shildi)
+app.get('/my-courses', async (req, res) => {
   const userId = req.query.userId;
   if (!userId) return res.json({ courses: [] });
   const courses = await db.getUserCourses(userId.toString());
@@ -370,6 +370,7 @@ app.post('/payment', async (req, res) => {
     res.json({ success: false, error: e.message });
   }
 });
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server ${PORT} portda ishlamoqda`));
 
