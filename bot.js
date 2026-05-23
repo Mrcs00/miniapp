@@ -218,6 +218,14 @@ app.use(function(req, res, next) {
 
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 
+// ── Foydalanuvchi kurslarini olish ──
+app.get('/my-courses', (req, res) => {
+  const userId = req.query.userId;
+  if (!userId) return res.json({ courses: [] });
+  const courses = db.getUserCourses(userId.toString());
+  res.json({ courses });
+});
+
 // ── Chek rasmi yuklash ──
 app.post('/upload-chek', upload.single('photo'), async (req, res) => {
   try {
