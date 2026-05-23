@@ -1421,8 +1421,8 @@ var LUGAT_1B = [
  {
   kva: 1,
   words: [
-    { id: 1, kr: "할머니", uz: "buva" },
-    { id: 2, kr: "할아버지", uz: "buvi" },
+    { id: 1, kr: "할머니", uz: "buvi" },
+    { id: 2, kr: "할아버지", uz: "buva" },
     { id: 3, kr: "어머니", uz: "ona" },
     { id: 4, kr: "아버지", uz: "ota" },
     { id: 5, kr: "누나", uz: "opa " },
@@ -1434,7 +1434,7 @@ var LUGAT_1B = [
     { id: 11, kr: "아내", uz: "xotin" },
     { id: 12, kr: "남편", uz: "er" },
     { id: 13, kr: "딸", uz: "qiz farzand" },
-    { id: 14, kr: "아들", uz: "o’g’il farzand" },
+    { id: 14, kr: "아들", uz: "o'g'il farzand" },
 
     { id: 15, kr: "열", uz: "10" },
     { id: 16, kr: "스물", uz: "20" },
