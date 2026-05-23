@@ -1844,7 +1844,7 @@ var LUGAT_2B = [
       { id: 27, kr: "한정식", uz: "koreys milliy oshxonasi" },
       { id: 28, kr: "직원", uz: "ishchi" },
       { id: 29, kr: "야채", uz: "sabzavotlar" },
-      { id: 30, kr: "돈이 아깝다", uz: "puli muhim" },
+      { id: 30, kr: "돈이 아깝다", uz: "pulni tejamoq" },
       { id: 31, kr: "큰 사랑 한정식집", uz: "katta muhabbat koreys milliy oshxonasi" },
       { id: 32, kr: "추천하다", uz: "tavsiya qilmoq" },
       { id: 33, kr: "케밥", uz: "kabob" },
