@@ -200,9 +200,64 @@ bot.command('orders', async (ctx) => {
   ctx.reply(pending ? `📋 Kutayotgan buyurtmalar:\n\n${pending}` : '✅ Kutayotgan buyurtma yo\'q');
 });
 
-// ── Express server (Render uchun) ──
+// ── Express server (Render/Railway uchun) ──
 const app = express();
+app.use(express.json());
+
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
+
+// ── Mini app dan to'lov so'rovi ──
+app.post('/payment', async (req, res) => {
+  try {
+    const { userId, courseId, username, firstName } = req.body;
+
+    if (!userId || !courseId) {
+      return res.json({ success: false, error: 'Ma\'lumotlar yetarli emas' });
+    }
+
+    // Foydalanuvchida kurs allaqachon bormi?
+    if (db.userHasCourse(userId.toString(), courseId)) {
+      return res.json({ success: false, error: 'Kurs allaqachon mavjud' });
+    }
+
+    const price = COURSE_PRICES[courseId] || 150000;
+    const orderId = `${userId}_${courseId}_${Date.now()}`;
+    db.createOrder(orderId, userId.toString(), courseId, username || '', firstName || '');
+
+    // Foydalanuvchiga to'lov ma'lumoti yuborish
+    await bot.telegram.sendMessage(
+      userId,
+      `💳 To'lov ma'lumotlari\n\n` +
+      `📚 Kurs: SNU ${courseId}\n` +
+      `💰 Narx: ${price.toLocaleString()} so'm\n\n` +
+      `Karta raqami:\n<code>${CARD_NUMBER}</code>\n` +
+      `Karta egasi: ${CARD_OWNER}\n\n` +
+      `⚠️ To'lov qilgandan so'ng <b>chek rasmini</b> shu chatga yuboring.\n` +
+      `Admin 24 soat ichida tasdiqlaydi.\n\n` +
+      `🔑 Buyurtma ID: <code>${orderId}</code>`,
+      { parse_mode: 'HTML' }
+    );
+
+    // Adminga xabar
+    await bot.telegram.sendMessage(
+      ADMIN_ID,
+      `🛒 Yangi buyurtma!\n\n` +
+      `👤 ${firstName || ''} ${username ? '@' + username : ''}\n` +
+      `🆔 ID: ${userId}\n` +
+      `📚 Kurs: SNU ${courseId}\n` +
+      `💰 Narx: ${price.toLocaleString()} so'm\n` +
+      `🔑 Order ID: <code>${orderId}</code>\n\n` +
+      `Tasdiqlash: /approve_${orderId}\n` +
+      `Bekor qilish: /reject_${orderId}`,
+      { parse_mode: 'HTML' }
+    );
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error('/payment error:', e);
+    res.json({ success: false, error: e.message });
+  }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server ${PORT} portda ishlamoqda`));
 
