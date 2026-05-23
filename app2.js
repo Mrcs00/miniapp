@@ -632,6 +632,15 @@ function selectPay(el) {
 
 var BACKEND_URL = 'https://miniapp-production-012c.up.railway.app';
 
+// Bot chatini ochish
+function openBotChat() {
+  if (tg) {
+    tg.openTelegramLink('https://t.me/KCstudy_bot');
+  } else {
+    window.open('https://t.me/KCstudy_bot', '_blank');
+  }
+}
+
 var contBtn = document.getElementById('cont-btn');
 if (contBtn) {
   contBtn.addEventListener('click', function() {
