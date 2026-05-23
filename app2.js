@@ -33,12 +33,12 @@ const COURSES = {
   boshlangich: [
     { id:'1A', name:'SNU 1A', level:"Boshlang'ich daraja", color:'#F5A623', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1a.jpg' },
     { id:'1B', name:'SNU 1B', level:"Boshlang'ich daraja", color:'#4CAF50', bolimlar:8, dars:25, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/1b.jpg' },
-    { id:'2A', name:'SNU 2A', level:"Boshlang'ich daraja", color:'#2196F3', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2a.jpg' },
-    { id:'2B', name:'SNU 2B', level:"Boshlang'ich daraja", color:'#00BCD4', bolimlar:8, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2b.jpg' },
+    { id:'2A', name:'SNU 2A', level:"Boshlang'ich daraja", color:'#2196F3', bolimlar:9, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2a.jpg' },
+    { id:'2B', name:'SNU 2B', level:"Boshlang'ich daraja", color:'#00BCD4', bolimlar:9, dars:24, soat:11, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/2b.jpg' },
   ],
   orta: [
-    { id:'3A', name:'SNU 3A', level:"O'rta daraja",        color:'#9C27B0', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/3a.jpg' },
-    { id:'3B', name:'SNU 3B', level:"O'rta daraja",        color:'#E91E63', bolimlar:8, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/3b.jpg' },
+    { id:'3A', name:'SNU 3A', level:"O'rta daraja",        color:'#9C27B0', bolimlar:9, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/3a.jpg' },
+    { id:'3B', name:'SNU 3B', level:"O'rta daraja",        color:'#E91E63', bolimlar:9, dars:20, soat:10, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/3b.jpg' },
     { id:'4A', name:'SNU 4A', level:"O'rta daraja",        color:'#FF5722', bolimlar:8, dars:24, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/4a.jpg' },
     { id:'4B', name:'SNU 4B', level:"O'rta daraja",        color:'#1565C0', bolimlar:8, dars:24, soat:12, img:'https://raw.githubusercontent.com/Mrcs00/miniapp/main/4b.jpg' },
   ],
@@ -610,24 +610,12 @@ function prevDars() {
   openDars(currentDars.courseId, newBolim, newDars);
 }
 
-// YANGI (to'g'ri):
 function nextDars() {
   var course = findCourse(currentDars.courseId);
   if (!course) return;
   var totalDars = course.bolimlar * 4;
   var darsIndex = (currentDars.bolim - 1) * 4 + currentDars.dars;
-
-  // Bo'lim oxirgi darsi tugadimi?
-  var isLastDarsInBolim = (currentDars.dars === 4);
-
   if (darsIndex >= totalDars) { showPage('bolim'); return; }
-
-  // Bo'lim tugasa — lug'at topshirish
-  if (isLastDarsInBolim && !isBolimCompleted(currentDars.courseId, currentDars.bolim)) {
-    openLugat(currentDars.courseId, currentDars.bolim);
-    return;
-  }
-
   darsIndex++;
   var newBolim = Math.ceil(darsIndex / 4);
   var newDars = darsIndex - (newBolim - 1) * 4;
