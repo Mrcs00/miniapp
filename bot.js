@@ -133,6 +133,55 @@ bot.on('photo', async (ctx) => {
   await ctx.reply('✅ Chekingiz qabul qilindi! Admin tez orada tasdiqlaydi.');
 });
 
+// ── Inline tugmalar (Tasdiqlash / Bekor qilish) ──
+bot.on('callback_query', async (ctx) => {
+  if (ctx.from.id.toString() !== ADMIN_ID) return;
+
+  const data = ctx.callbackQuery.data;
+
+  if (data.startsWith('approve_')) {
+    const orderId = data.replace('approve_', '');
+    const order = db.getOrder(orderId);
+
+    if (!order) return ctx.answerCbQuery('❌ Order topilmadi!');
+    if (order.status === 'approved') return ctx.answerCbQuery('⚠️ Allaqachon tasdiqlangan!');
+
+    db.approveOrder(orderId);
+    db.addCourseToUser(order.userId, order.courseId);
+
+    await bot.telegram.sendMessage(
+      order.userId,
+      `🎉 Tabriklaymiz!\n\n✅ SNU ${order.courseId} kursi sizga ulandi!\n\nMini appni oching va o'qishni boshlang 👇`,
+      Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy ga kirish', MINI_APP_URL)]])
+    );
+
+    await ctx.editMessageCaption(
+      ctx.callbackQuery.message.caption + '\n\n✅ TASDIQLANDI',
+      { parse_mode: 'HTML' }
+    );
+    ctx.answerCbQuery('✅ Tasdiqlandi!');
+
+  } else if (data.startsWith('reject_')) {
+    const orderId = data.replace('reject_', '');
+    const order = db.getOrder(orderId);
+
+    if (!order) return ctx.answerCbQuery('❌ Order topilmadi!');
+
+    db.rejectOrder(orderId);
+
+    await bot.telegram.sendMessage(
+      order.userId,
+      `❌ Afsuski to'lovingiz tasdiqlanmadi.\n\nMuammo bo'lsa admin bilan bog'laning.`
+    );
+
+    await ctx.editMessageCaption(
+      ctx.callbackQuery.message.caption + '\n\n❌ BEKOR QILINDI',
+      { parse_mode: 'HTML' }
+    );
+    ctx.answerCbQuery('❌ Bekor qilindi!');
+  }
+});
+
 // ── Admin: /approve_ORDERID ──
 bot.hears(/^\/approve_(.+)$/, async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
@@ -246,10 +295,14 @@ app.post('/upload-chek', upload.single('photo'), async (req, res) => {
         `👤 ${firstName || ''} ${username ? '@' + username : ''}\n` +
         `🆔 ID: ${userId}\n` +
         `📚 Kurs: SNU ${courseId}\n` +
-        `🔑 Order ID: <code>${orderId}</code>\n\n` +
-        `Tasdiqlash: /approve_${orderId}\n` +
-        `Bekor qilish: /reject_${orderId}`,
-      parse_mode: 'HTML'
+        `🔑 Order ID: <code>${orderId}</code>`,
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [[
+          { text: '✅ Tasdiqlash', callback_data: `approve_${orderId}` },
+          { text: '❌ Bekor qilish', callback_data: `reject_${orderId}` }
+        ]]
+      }
     });
 
     // Foydalanuvchiga xabar
@@ -305,10 +358,16 @@ app.post('/payment', async (req, res) => {
       `🆔 ID: ${userId}\n` +
       `📚 Kurs: SNU ${courseId}\n` +
       `💰 Narx: ${price.toLocaleString()} so'm\n` +
-      `🔑 Order ID: <code>${orderId}</code>\n\n` +
-      `Tasdiqlash: /approve_${orderId}\n` +
-      `Bekor qilish: /reject_${orderId}`,
-      { parse_mode: 'HTML' }
+      `🔑 Order ID: <code>${orderId}</code>`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '✅ Tasdiqlash', callback_data: `approve_${orderId}` },
+            { text: '❌ Bekor qilish', callback_data: `reject_${orderId}` }
+          ]]
+        }
+      }
     );
 
     res.json({ success: true });
