@@ -652,6 +652,60 @@ function copyCard() {
   }
 }
 
+// Chek rasmini yuborish
+function uploadChek(input) {
+  var file = input.files[0];
+  if (!file) return;
+
+  var status = document.getElementById('chek-status');
+  if (status) {
+    status.style.display = 'block';
+    status.style.background = '#fff3cd';
+    status.style.color = '#856404';
+    status.textContent = '⏳ Yuklanmoqda...';
+  }
+
+  var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+  var username = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.username || '' : '';
+  var firstName = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name || '' : '';
+  var courseId = selectedCourse ? selectedCourse.id : '';
+
+  var formData = new FormData();
+  formData.append('photo', file);
+  formData.append('userId', userId);
+  formData.append('username', username);
+  formData.append('firstName', firstName);
+  formData.append('courseId', courseId);
+
+  fetch(BACKEND_URL + '/upload-chek', {
+    method: 'POST',
+    body: formData
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.success) {
+      if (status) {
+        status.style.background = '#d4edda';
+        status.style.color = '#155724';
+        status.textContent = '✅ Chek yuborildi! Admin tez orada tasdiqlaydi.';
+      }
+    } else {
+      if (status) {
+        status.style.background = '#f8d7da';
+        status.style.color = '#721c24';
+        status.textContent = '❌ Xatolik! Qayta urinib ko\'ring.';
+      }
+    }
+  })
+  .catch(function() {
+    if (status) {
+      status.style.background = '#f8d7da';
+      status.style.color = '#721c24';
+      status.textContent = '❌ Internet xatosi! Qayta urinib ko\'ring.';
+    }
+  });
+}
+
 // Bot chatini ochish
 function openBotChat() {
   if (tg) {
