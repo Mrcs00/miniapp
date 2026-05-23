@@ -355,34 +355,14 @@
       </div>
     </div>
     <div class="sep"></div>
-    <div class="pay-sect">To'lov usulini tanlang</div>
-    <div class="pay-opt selected" onclick="selectPay(this)">
-      <div class="radio on"></div>
-      <div class="pay-lbl">Click</div>
-      <div class="pay-logo click-c">CLICK</div>
-    </div>
-    <div class="pay-opt" onclick="selectPay(this)">
-      <div class="radio"></div>
-      <div class="pay-lbl">Payme</div>
-      <div class="pay-logo payme-c">Payme</div>
-    </div>
-    <div class="pay-opt" onclick="selectPay(this)">
-      <div class="radio"></div>
-      <div class="pay-lbl">UzCard / Humo</div>
-      <div class="pay-logo uzcard-c">UZCARD</div>
-    </div>
-    <div class="pay-opt" onclick="selectPay(this)">
-      <div class="radio"></div>
-      <div class="pay-lbl">Bank karta</div>
-      <div class="pay-logo visa-c">VISA 💳</div>
-    </div>
-    <button class="cont-btn" id="cont-btn">To'lovni davom ettirish</button>
-    <button onclick="openBotChat()"
-       style="display:block;width:calc(100% - 32px);margin:12px 16px 0;padding:15px;
+    <input type="file" id="chek-input" accept="image/*" style="display:none" onchange="uploadChek(this)">
+    <button onclick="document.getElementById('chek-input').click()"
+       style="display:block;width:calc(100% - 32px);margin:20px 16px 0;padding:15px;
        background:#27AE60;color:#fff;border:none;border-radius:14px;font-size:15px;
        font-weight:700;text-align:center;cursor:pointer;box-sizing:border-box">
-       📸 Chek yuborish →
+       📸 Chek rasmini yuborish
     </button>
+    <div id="chek-status" style="display:none;margin:10px 16px;padding:12px;border-radius:12px;text-align:center;font-size:14px"></div>
     <div class="secure">🔒 To'lovlar xavfsiz va himoyalangan</div>
   </div>
 </div>
