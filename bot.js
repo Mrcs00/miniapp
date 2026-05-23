@@ -1,6 +1,9 @@
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
+const multer = require('multer');
 const db = require('./database');
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '7600431069:AAFfmqWnJIK7tVhW3RlOK7mKWBQKPZ-NmCs';
 const ADMIN_ID = process.env.ADMIN_ID || '1847556913';
@@ -214,6 +217,45 @@ app.use(function(req, res, next) {
 });
 
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
+
+// ── Chek rasmi yuklash ──
+app.post('/upload-chek', upload.single('photo'), async (req, res) => {
+  try {
+    const { userId, courseId, username, firstName } = req.body;
+    const file = req.file;
+
+    if (!file || !userId) {
+      return res.json({ success: false, error: 'Ma\'lumotlar yetarli emas' });
+    }
+
+    const orderId = `${userId}_${courseId}_${Date.now()}`;
+    db.createOrder(orderId, userId.toString(), courseId || '', username || '', firstName || '');
+
+    // Adminga rasmni yuborish
+    await bot.telegram.sendPhoto(ADMIN_ID, { source: file.buffer }, {
+      caption:
+        `📸 Yangi chek!\n\n` +
+        `👤 ${firstName || ''} ${username ? '@' + username : ''}\n` +
+        `🆔 ID: ${userId}\n` +
+        `📚 Kurs: SNU ${courseId}\n` +
+        `🔑 Order ID: <code>${orderId}</code>\n\n` +
+        `Tasdiqlash: /approve_${orderId}\n` +
+        `Bekor qilish: /reject_${orderId}`,
+      parse_mode: 'HTML'
+    });
+
+    // Foydalanuvchiga xabar
+    await bot.telegram.sendMessage(
+      userId,
+      `✅ Chekingiz qabul qilindi!\n\nAdmin 24 soat ichida tasdiqlaydi.`
+    );
+
+    res.json({ success: true });
+  } catch (e) {
+    console.error('/upload-chek error:', e);
+    res.json({ success: false, error: e.message });
+  }
+});
 
 // ── Mini app dan to'lov so'rovi ──
 app.post('/payment', async (req, res) => {
