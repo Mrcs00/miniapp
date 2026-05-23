@@ -51,7 +51,7 @@ bot.command('help', (ctx) => {
 // ── /mycourses ──
 bot.command('mycourses', (ctx) => {
   const userId = ctx.from.id.toString();
-  const courses = db.getUserCourses(userId);
+  const courses = await db.getUserCourses(userId);
   if (courses.length === 0) {
     ctx.reply('Sizda hali sotib olingan kurs yo\'q.\n\nKurs sotib olish uchun mini appni oching 👇',
       Markup.inlineKeyboard([
@@ -76,13 +76,13 @@ bot.on('web_app_data', async (ctx) => {
       const price = COURSE_PRICES[courseId] || 150000;
 
       // Foydalanuvchida kurs allaqachon bormi?
-      if (db.userHasCourse(userId, courseId)) {
+      if (await db.userHasCourse(userId, courseId)) {
         return ctx.reply(`✅ Siz allaqachon SNU ${courseId} kursiga egasiz!`);
       }
 
       // Order ID yaratish
       const orderId = `${userId}_${courseId}_${Date.now()}`;
-      db.createOrder(orderId, userId, courseId, username, firstName);
+      await db.createOrder(orderId, userId, courseId, username, firstName);
 
       // Foydalanuvchiga to'lov ma'lumoti
       await ctx.reply(
@@ -141,13 +141,13 @@ bot.on('callback_query', async (ctx) => {
 
   if (data.startsWith('approve_')) {
     const orderId = data.replace('approve_', '');
-    const order = db.getOrder(orderId);
+    const order = await db.getOrder(orderId);
 
     if (!order) return ctx.answerCbQuery('❌ Order topilmadi!');
     if (order.status === 'approved') return ctx.answerCbQuery('⚠️ Allaqachon tasdiqlangan!');
 
-    db.approveOrder(orderId);
-    db.addCourseToUser(order.userId, order.courseId);
+    await db.approveOrder(orderId);
+    await db.addCourseToUser(order.userId, order.courseId);
 
     await bot.telegram.sendMessage(
       order.userId,
@@ -163,11 +163,11 @@ bot.on('callback_query', async (ctx) => {
 
   } else if (data.startsWith('reject_')) {
     const orderId = data.replace('reject_', '');
-    const order = db.getOrder(orderId);
+    const order = await db.getOrder(orderId);
 
     if (!order) return ctx.answerCbQuery('❌ Order topilmadi!');
 
-    db.rejectOrder(orderId);
+    await db.rejectOrder(orderId);
 
     await bot.telegram.sendMessage(
       order.userId,
@@ -187,7 +187,7 @@ bot.hears(/^\/approve_(.+)$/, async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
 
   const orderId = ctx.match[1];
-  const order = db.getOrder(orderId);
+  const order = await db.getOrder(orderId);
 
   if (!order) {
     return ctx.reply('❌ Order topilmadi: ' + orderId);
@@ -196,8 +196,8 @@ bot.hears(/^\/approve_(.+)$/, async (ctx) => {
     return ctx.reply('⚠️ Bu order allaqachon tasdiqlangan!');
   }
 
-  db.approveOrder(orderId);
-  db.addCourseToUser(order.userId, order.courseId);
+  await db.approveOrder(orderId);
+  await db.addCourseToUser(order.userId, order.courseId);
 
   // Foydalanuvchiga xabar
   await bot.telegram.sendMessage(
@@ -218,13 +218,13 @@ bot.hears(/^\/reject_(.+)$/, async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
 
   const orderId = ctx.match[1];
-  const order = db.getOrder(orderId);
+  const order = await db.getOrder(orderId);
 
   if (!order) {
     return ctx.reply('❌ Order topilmadi: ' + orderId);
   }
 
-  db.rejectOrder(orderId);
+  await db.rejectOrder(orderId);
 
   // Foydalanuvchiga xabar
   await bot.telegram.sendMessage(
@@ -239,16 +239,10 @@ bot.hears(/^\/reject_(.+)$/, async (ctx) => {
 // ── Admin: barcha buyurtmalar ──
 bot.command('orders', async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
-  const { orders } = require('./database');
-  const db2 = require('fs').existsSync('./db.json')
-    ? JSON.parse(require('fs').readFileSync('./db.json'))
-    : { orders: {} };
-
-  const pending = Object.entries(db2.orders)
-    .filter(([, o]) => o.status === 'pending')
-    .map(([id, o]) => `• ${o.firstName} — SNU ${o.courseId}\n  /approve_${id}`)
+  const pendingOrders = await db.getPendingOrders();
+  const pending = pendingOrders
+    .map(o => `• ${o.first_name} — SNU ${o.course_id}\n  /approve_${o.order_id}`)
     .join('\n\n');
-
   ctx.reply(pending ? `📋 Kutayotgan buyurtmalar:\n\n${pending}` : '✅ Kutayotgan buyurtma yo\'q');
 });
 
@@ -271,7 +265,7 @@ app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 app.get('/my-courses', (req, res) => {
   const userId = req.query.userId;
   if (!userId) return res.json({ courses: [] });
-  const courses = db.getUserCourses(userId.toString());
+  const courses = await db.getUserCourses(userId.toString());
   res.json({ courses });
 });
 
@@ -286,7 +280,7 @@ app.post('/upload-chek', upload.single('photo'), async (req, res) => {
     }
 
     const orderId = `${userId}_${courseId}_${Date.now()}`;
-    db.createOrder(orderId, userId.toString(), courseId || '', username || '', firstName || '');
+    await db.createOrder(orderId, userId.toString(), courseId || '', username || '', firstName || '');
 
     // Adminga rasmni yuborish
     await bot.telegram.sendPhoto(ADMIN_ID, { source: file.buffer }, {
@@ -328,13 +322,13 @@ app.post('/payment', async (req, res) => {
     }
 
     // Foydalanuvchida kurs allaqachon bormi?
-    if (db.userHasCourse(userId.toString(), courseId)) {
+    if (await db.userHasCourse(userId.toString(), courseId)) {
       return res.json({ success: false, error: 'Kurs allaqachon mavjud' });
     }
 
     const price = COURSE_PRICES[courseId] || 150000;
     const orderId = `${userId}_${courseId}_${Date.now()}`;
-    db.createOrder(orderId, userId.toString(), courseId, username || '', firstName || '');
+    await db.createOrder(orderId, userId.toString(), courseId, username || '', firstName || '');
 
     // Foydalanuvchiga to'lov ma'lumoti yuborish
     await bot.telegram.sendMessage(
