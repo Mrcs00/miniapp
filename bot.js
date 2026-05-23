@@ -204,6 +204,15 @@ bot.command('orders', async (ctx) => {
 const app = express();
 app.use(express.json());
 
+// CORS - mini app dan so'rovlarga ruxsat
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 
 // ── Mini app dan to'lov so'rovi ──
