@@ -49,7 +49,7 @@ bot.command('help', (ctx) => {
 });
 
 // ── /mycourses ──
-bot.command('mycourses', (ctx) => {
+bot.command('mycourses', async (ctx) => {
   const userId = ctx.from.id.toString();
   const courses = await db.getUserCourses(userId);
   if (courses.length === 0) {
