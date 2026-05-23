@@ -344,6 +344,9 @@ function openCourse(courseId, fromPage) {
     }
   }, 50);
 
+  // Sotib olinganligini tekshirish
+  checkUserCourse(course.id);
+
   showPage('course-detail');
 }
 
@@ -675,6 +678,45 @@ function loadMyCourses() {
       list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Xatolik yuz berdi</div><div class="empty-sub">Qayta urinib ko\'ring.</div></div>';
     });
 }
+// Foydalanuvchi kursni sotib olganmi tekshirish
+function checkUserCourse(courseId) {
+  var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
+  var buyBtn = document.getElementById('buy-btn');
+  var buyPrice = document.getElementById('detail-price');
+
+  if (!userId) return;
+
+  fetch(BACKEND_URL + '/my-courses?userId=' + userId)
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var courses = data.courses || [];
+      if (courses.indexOf(courseId) !== -1) {
+        if (buyBtn) {
+          buyBtn.textContent = '✅ Davom etish';
+          buyBtn.style.background = '#27AE60';
+          buyBtn.onclick = null;
+        }
+        if (buyPrice) {
+          buyPrice.textContent = '✅ Sotib olingan';
+          buyPrice.style.color = '#27AE60';
+          buyPrice.style.fontSize = '13px';
+        }
+      } else {
+        if (buyBtn) {
+          buyBtn.textContent = 'Sotib olish';
+          buyBtn.style.background = '#42A5F5';
+          buyBtn.onclick = function() { showPage('payment'); };
+        }
+        if (buyPrice) {
+          buyPrice.textContent = "* * * so'm";
+          buyPrice.style.color = '';
+          buyPrice.style.fontSize = '';
+        }
+      }
+    })
+    .catch(function() {});
+}
+
 function copyCard() {
   var cardNumber = '9860120173642691';
   if (navigator.clipboard) {
