@@ -1451,7 +1451,7 @@ var LUGAT_1B = [
     { id: 26, kr: "댁", uz: "uy " },
     { id: 27, kr: "분", uz: "kishi" },
     { id: 28, kr: "연세", uz: "yosh" },
-    { id: 29, kr: "계시다", uz: "bor bo’lmoq" },
+    { id: 29, kr: "계시다", uz: "bor bo'lmoq" },
     { id: 30, kr: "드시다", uz: "yemoq/ichmoq " },
     { id: 31, kr: "주무시다", uz: "uxlamoq" },
     { id: 32, kr: "상자", uz: "quti" },
