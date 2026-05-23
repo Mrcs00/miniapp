@@ -632,6 +632,26 @@ function selectPay(el) {
 
 var BACKEND_URL = 'https://miniapp-production-012c.up.railway.app';
 
+// Karta raqamini nusxalash
+function copyCard() {
+  var cardNumber = '9860120173642691';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(cardNumber).then(function() {
+      var btn = document.getElementById('copy-btn');
+      if (btn) { btn.textContent = '✅ Nusxalandi'; setTimeout(function() { btn.textContent = 'Nusxa'; }, 2000); }
+    });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = cardNumber;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    var btn = document.getElementById('copy-btn');
+    if (btn) { btn.textContent = '✅ Nusxalandi'; setTimeout(function() { btn.textContent = 'Nusxa'; }, 2000); }
+  }
+}
+
 // Bot chatini ochish
 function openBotChat() {
   if (tg) {
