@@ -5,9 +5,9 @@ const db = require('./database');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-const BOT_TOKEN = process.env.BOT_TOKEN || '7600431069:AAFfmqWnJIK7tVhW3RlOK7mKWBQKPZ-NmCs';
-const ADMIN_ID = process.env.ADMIN_ID || '1847556913';
-const MINI_APP_URL = process.env.MINI_APP_URL || 'https://mrcs00.github.io/miniapp';
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const ADMIN_ID = process.env.ADMIN_ID;
+const MINI_APP_URL = process.env.MINI_APP_URL;
 
 // Kurs narxlari
 const COURSE_PRICES = {
@@ -20,8 +20,8 @@ const COURSE_PRICES = {
 };
 
 // To'lov karta raqami
-const CARD_NUMBER = process.env.CARD_NUMBER || '9860 1201 7364 2691';
-const CARD_OWNER = process.env.CARD_OWNER || 'Muhammadqodir Orifjonov';
+const CARD_NUMBER = process.env.CARD_NUMBER;
+const CARD_OWNER = process.env.CARD_OWNER;
 
 const bot = new Telegraf(BOT_TOKEN);
 
@@ -271,10 +271,29 @@ app.use(function(req, res, next) {
 
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 
+// ── Rate limiting ──
+const requestCounts = {};
+function rateLimit(userId, maxPerMinute = 10) {
+  const now = Date.now();
+  const key = userId + '_' + Math.floor(now / 60000);
+  requestCounts[key] = (requestCounts[key] || 0) + 1;
+  // Eski yozuvlarni tozalash
+  Object.keys(requestCounts).forEach(k => {
+    if (k.split('_')[1] < Math.floor(now / 60000) - 1) delete requestCounts[k];
+  });
+  return requestCounts[key] > maxPerMinute;
+}
+
+// ── userId tekshirish ──
+function isValidUserId(userId) {
+  return userId && /^\d+$/.test(userId.toString()) && userId.toString().length >= 5;
+}
+
 // ── Foydalanuvchi kurslarini olish ──
 app.get('/my-courses', async (req, res) => {
   const userId = req.query.userId;
-  if (!userId) return res.json({ courses: [] });
+  if (!isValidUserId(userId)) return res.json({ courses: [], coursesWithInfo: [] });
+  if (rateLimit(userId)) return res.status(429).json({ error: 'Too many requests' });
   const courses = await db.getUserCourses(userId.toString());
 
   // Har kurs uchun tugash sanasini ham olish
@@ -295,8 +314,19 @@ app.post('/upload-chek', upload.single('photo'), async (req, res) => {
     const { userId, courseId, username, firstName } = req.body;
     const file = req.file;
 
-    if (!file || !userId) {
-      return res.json({ success: false, error: 'Ma\'lumotlar yetarli emas' });
+    if (!isValidUserId(userId) || !file) {
+      return res.json({ success: false, error: 'Ma\'lumotlar noto\'g\'ri' });
+    }
+    if (rateLimit(userId, 3)) {
+      return res.status(429).json({ success: false, error: 'Juda ko\'p so\'rov' });
+    }
+    // Fayl hajmini tekshirish (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return res.json({ success: false, error: 'Fayl juda katta (max 10MB)' });
+    }
+    // Fayl turi tekshirish
+    if (!file.mimetype.startsWith('image/')) {
+      return res.json({ success: false, error: 'Faqat rasm yuborilishi mumkin' });
     }
 
     const orderId = `${userId}_${courseId}_${Date.now()}`;
@@ -337,8 +367,16 @@ app.post('/payment', async (req, res) => {
   try {
     const { userId, courseId, username, firstName } = req.body;
 
-    if (!userId || !courseId) {
-      return res.json({ success: false, error: 'Ma\'lumotlar yetarli emas' });
+    if (!isValidUserId(userId) || !courseId) {
+      return res.json({ success: false, error: 'Ma\'lumotlar noto\'g\'ri' });
+    }
+    if (rateLimit(userId, 5)) {
+      return res.status(429).json({ success: false, error: 'Juda ko\'p so\'rov' });
+    }
+    // courseId to'g'rimi tekshirish
+    const validCourses = ['1A','1B','2A','2B','3A','3B','4A','4B','5A','5B','6A','6B'];
+    if (!validCourses.includes(courseId)) {
+      return res.json({ success: false, error: 'Noto\'g\'ri kurs' });
     }
 
     // Foydalanuvchida kurs allaqachon bormi?
