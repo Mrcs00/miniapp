@@ -272,7 +272,7 @@ app.use(function(req, res, next) {
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 
 // ── Foydalanuvchi kurslarini olish ──
-app.get('/my-courses', (req, res) => {
+app.get('/my-courses', async (req, res) => {
   const userId = req.query.userId;
   if (!userId) return res.json({ courses: [] });
   const courses = await db.getUserCourses(userId.toString());
