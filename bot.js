@@ -276,7 +276,17 @@ app.get('/my-courses', async (req, res) => {
   const userId = req.query.userId;
   if (!userId) return res.json({ courses: [] });
   const courses = await db.getUserCourses(userId.toString());
-  res.json({ courses });
+
+  // Har kurs uchun tugash sanasini ham olish
+  const coursesWithInfo = [];
+  for (const courseId of courses) {
+    const info = await db.getSubscriptionInfo(userId.toString(), courseId);
+    coursesWithInfo.push({
+      courseId,
+      endDate: info ? info.end_date : null
+    });
+  }
+  res.json({ courses, coursesWithInfo });
 });
 
 // ── Chek rasmi yuklash ──
