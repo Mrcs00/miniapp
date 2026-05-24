@@ -24,13 +24,36 @@ async function initDB() {
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id SERIAL PRIMARY KEY,
+      user_id TEXT,
+      course_id TEXT,
+      start_date TIMESTAMP DEFAULT NOW(),
+      end_date TIMESTAMP,
+      active BOOLEAN DEFAULT TRUE,
+      UNIQUE(user_id, course_id)
+    )
+  `);
   console.log('DB jadvallar tayyor ✅');
 }
 
 initDB().catch(console.error);
 
-// Foydalanuvchiga kurs qo'shish
+// Foydalanuvchiga kurs qo'shish (1 oylik obuna)
 async function addCourseToUser(userId, courseId) {
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + 1); // 1 oy qo'shish
+
+  await pool.query(`
+    INSERT INTO subscriptions (user_id, course_id, start_date, end_date, active)
+    VALUES ($1, $2, $3, $4, TRUE)
+    ON CONFLICT (user_id, course_id) DO UPDATE
+    SET start_date = $3, end_date = $4, active = TRUE
+  `, [userId, courseId, startDate, endDate]);
+
+  // users jadvaliga ham qo'shish
   await pool.query(`
     INSERT INTO users (user_id, courses) VALUES ($1, ARRAY[$2]::text[])
     ON CONFLICT (user_id) DO UPDATE
@@ -39,16 +62,52 @@ async function addCourseToUser(userId, courseId) {
   `, [userId, courseId]);
 }
 
-// Foydalanuvchining kurslarini olish
+// Foydalanuvchining aktiv kurslarini olish
 async function getUserCourses(userId) {
-  const res = await pool.query('SELECT courses FROM users WHERE user_id = $1', [userId]);
-  return res.rows[0]?.courses || [];
+  const res = await pool.query(`
+    SELECT course_id FROM subscriptions
+    WHERE user_id = $1 AND active = TRUE AND end_date > NOW()
+  `, [userId]);
+  return res.rows.map(r => r.course_id);
 }
 
-// Foydalanuvchida kurs bormi
+// Foydalanuvchida aktiv kurs bormi
 async function userHasCourse(userId, courseId) {
-  const courses = await getUserCourses(userId);
-  return courses.includes(courseId);
+  const res = await pool.query(`
+    SELECT id FROM subscriptions
+    WHERE user_id = $1 AND course_id = $2 AND active = TRUE AND end_date > NOW()
+  `, [userId, courseId]);
+  return res.rows.length > 0;
+}
+
+// Obuna tugash sanasini olish
+async function getSubscriptionInfo(userId, courseId) {
+  const res = await pool.query(`
+    SELECT * FROM subscriptions
+    WHERE user_id = $1 AND course_id = $2 AND active = TRUE
+  `, [userId, courseId]);
+  return res.rows[0] || null;
+}
+
+// 3 kun ichida tugaydigan obunalarni olish
+async function getExpiringSubscriptions() {
+  const res = await pool.query(`
+    SELECT * FROM subscriptions
+    WHERE active = TRUE
+    AND end_date > NOW()
+    AND end_date <= NOW() + INTERVAL '3 days'
+  `);
+  return res.rows;
+}
+
+// Muddati o'tgan obunalarni o'chirish
+async function deactivateExpiredSubscriptions() {
+  const res = await pool.query(`
+    UPDATE subscriptions SET active = FALSE
+    WHERE active = TRUE AND end_date <= NOW()
+    RETURNING *
+  `);
+  return res.rows;
 }
 
 // Yangi order yaratish
@@ -95,6 +154,9 @@ module.exports = {
   addCourseToUser,
   getUserCourses,
   userHasCourse,
+  getSubscriptionInfo,
+  getExpiringSubscriptions,
+  deactivateExpiredSubscriptions,
   createOrder,
   getOrder,
   approveOrder,
