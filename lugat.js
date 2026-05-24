@@ -594,7 +594,7 @@ function openLugat(courseId, bolimNum) {
   lugatState.currentIndex = 0;
   lugatState.correctCount = 0;
   lugatState.wrongCount = 0;
-  lugatState.shuffled = shuffleArray(bolimLugat.words).slice(0, 10); // 10 ta so'z
+  lugatState.shuffled = shuffleArray(bolimLugat.words).slice(0, 20); // 20 ta so'z
   lugatState.direction = Math.random() > 0.5 ? 'kr_to_uz' : 'uz_to_kr';
 
   // Kurs rangini olish
@@ -677,9 +677,15 @@ function checkLugat() {
   // Apostrof va maxsus belgilarni olib tashlash
   function normalizeText(str) {
     return str.toLowerCase()
-      .replace(/'/g, '')
-      .replace(/'/g, '')
-      .replace(/`/g, '')
+      .replace(/'/g, '')    // oddiy apostrof
+      .replace(/'/g, '')    // o'ng apostrof
+      .replace(/'/g, '')    // chap apostrof
+      .replace(/ʼ/g, '')   // lotin apostrofi
+      .replace(/`/g, '')    // backtick
+      .replace(/ʼ/g, '') // modifier letter apostrophe
+      .replace(/‘/g, '') // left single quotation
+      .replace(/’/g, '') // right single quotation
+      .replace(/︐/g, '') // presentation form
       .trim();
   }
 
@@ -780,7 +786,7 @@ function retryLugat() {
   lugatState.currentIndex = 0;
   lugatState.correctCount = 0;
   lugatState.wrongCount = 0;
-  lugatState.shuffled = shuffleArray(lugatState.words).slice(0, 10);
+  lugatState.shuffled = shuffleArray(lugatState.words).slice(0, 20);
 
   var natijaSahifa = document.getElementById('lugat-natija-sahifa');
   var savolSahifa = document.getElementById('lugat-savol-sahifa');
@@ -1421,8 +1427,8 @@ var LUGAT_1B = [
  {
   kva: 1,
   words: [
-    { id: 1, kr: "할머니", uz: "buvi" },
-    { id: 2, kr: "할아버지", uz: "buva" },
+    { id: 1, kr: "할머니", uz: "buva" },
+    { id: 2, kr: "할아버지", uz: "buvi" },
     { id: 3, kr: "어머니", uz: "ona" },
     { id: 4, kr: "아버지", uz: "ota" },
     { id: 5, kr: "누나", uz: "opa " },
@@ -1434,7 +1440,7 @@ var LUGAT_1B = [
     { id: 11, kr: "아내", uz: "xotin" },
     { id: 12, kr: "남편", uz: "er" },
     { id: 13, kr: "딸", uz: "qiz farzand" },
-    { id: 14, kr: "아들", uz: "o'g'il farzand" },
+    { id: 14, kr: "아들", uz: "o’g’il farzand" },
 
     { id: 15, kr: "열", uz: "10" },
     { id: 16, kr: "스물", uz: "20" },
@@ -1451,20 +1457,20 @@ var LUGAT_1B = [
     { id: 26, kr: "댁", uz: "uy " },
     { id: 27, kr: "분", uz: "kishi" },
     { id: 28, kr: "연세", uz: "yosh" },
-    { id: 29, kr: "계시다", uz: "bor bo'lmoq" },
+    { id: 29, kr: "계시다", uz: "bor bo’lmoq" },
     { id: 30, kr: "드시다", uz: "yemoq/ichmoq " },
     { id: 31, kr: "주무시다", uz: "uxlamoq" },
     { id: 32, kr: "상자", uz: "quti" },
-    { id: 33, kr: "꺼내다", uz: "sug'urmoq" },
+    { id: 33, kr: "꺼내다", uz: "sug’urmoq" },
     { id: 34, kr: "운전", uz: "haydamoq" },
     { id: 35, kr: "수학", uz: "matematika" },
     { id: 36, kr: "인사하다", uz: "salomlashmoq" },
-    { id: 37, kr: "이쪽", uz: "bu taraf" },
+    { id: 37, kr: "이쪽", uz: "bu" },
     { id: 38, kr: "한테서", uz: "-dan" },
     { id: 39, kr: "뭘요", uz: "unchalik emas" },
-    { id: 40, kr: "동아리", uz: "to'garak" },
-    { id: 41, kr: "같은과", uz: "o'xshash daraja" },
-    { id: 42, kr: "윗사람", uz: "o'zidan katta odam" },
+    { id: 40, kr: "동아리", uz: "to’garak" },
+    { id: 41, kr: "같은과", uz: "o’xshash daraja" },
+    { id: 42, kr: "윗사람", uz: "o’zidan katta odam" },
     { id: 43, kr: "역사", uz: "tarix" },
     { id: 44, kr: "이분", uz: "bu kishi" },
     { id: 45, kr: "우리", uz: "biz/bizning" },
@@ -1478,16 +1484,16 @@ var LUGAT_1B = [
     { id: 53, kr: "미인", uz: "chiroyli ayol" },
     { id: 54, kr: "대학교", uz: "universitet" },
     { id: 55, kr: "신문사", uz: "bosmaxona" },
-    { id: 56, kr: "중학교", uz: "o'rta maktab" },
+    { id: 56, kr: "중학교", uz: "o’rta maktab" },
     { id: 57, kr: "공손하다", uz: "kamtar" },
     { id: 58, kr: "강아지", uz: "kuchukcha" },
     { id: 59, kr: "가족사진", uz: "oilaviy rasm" },
     { id: 60, kr: "웃다", uz: "kulmoq" },
     { id: 61, kr: "취미", uz: "hobby" },
     { id: 62, kr: "아기", uz: "chaqaloq" },
-    { id: 63, kr: "태어나다", uz: "tug'ilmoq" },
+    { id: 63, kr: "태어나다", uz: "tug’ilmoq" },
     { id: 64, kr: "다른나라", uz: "boshqa davlat" },
-    { id: 65, kr: "되다", uz: "bo'lmoq" }
+    { id: 65, kr: "되다", uz: "bo’lmoq" }
   ]
 },
   {
@@ -1844,7 +1850,7 @@ var LUGAT_2B = [
       { id: 27, kr: "한정식", uz: "koreys milliy oshxonasi" },
       { id: 28, kr: "직원", uz: "ishchi" },
       { id: 29, kr: "야채", uz: "sabzavotlar" },
-      { id: 30, kr: "돈이 아깝다", uz: "pulni tejamoq" },
+      { id: 30, kr: "돈이 아깝다", uz: "puli muhim" },
       { id: 31, kr: "큰 사랑 한정식집", uz: "katta muhabbat koreys milliy oshxonasi" },
       { id: 32, kr: "추천하다", uz: "tavsiya qilmoq" },
       { id: 33, kr: "케밥", uz: "kabob" },
