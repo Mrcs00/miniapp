@@ -59,7 +59,17 @@ bot.command('mycourses', async (ctx) => {
       ])
     );
   } else {
-    ctx.reply(`✅ Sizning kurslaringiz:\n\n${courses.map(c => `• SNU ${c}`).join('\n')}`);
+    let text = '✅ Sizning kurslaringiz:\n\n';
+    for (const courseId of courses) {
+      const info = await db.getSubscriptionInfo(userId, courseId);
+      if (info) {
+        const endDate = new Date(info.end_date).toLocaleDateString('ru-RU');
+        text += `📚 SNU ${courseId} — ${endDate} gacha\n`;
+      } else {
+        text += `📚 SNU ${courseId}\n`;
+      }
+    }
+    ctx.reply(text);
   }
 });
 
@@ -261,8 +271,8 @@ app.use(function(req, res, next) {
 
 app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
 
-// ── Foydalanuvchi kurslarini olish ── (FIXED: async qo'shildi)
-app.get('/my-courses', async (req, res) => {
+// ── Foydalanuvchi kurslarini olish ──
+app.get('/my-courses', (req, res) => {
   const userId = req.query.userId;
   if (!userId) return res.json({ courses: [] });
   const courses = await db.getUserCourses(userId.toString());
@@ -370,7 +380,6 @@ app.post('/payment', async (req, res) => {
     res.json({ success: false, error: e.message });
   }
 });
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server ${PORT} portda ishlamoqda`));
 
@@ -383,3 +392,45 @@ bot.launch().then(() => {
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
+// ── OBUNA TEKSHIRISH (har kuni soat 10:00 da) ──
+async function checkSubscriptions() {
+  try {
+    // Muddati o'tganlarni o'chirish
+    const expired = await db.deactivateExpiredSubscriptions();
+    for (const sub of expired) {
+      try {
+        await bot.telegram.sendMessage(
+          sub.user_id,
+          `⏰ SNU ${sub.course_id} kursi obunangiz tugadi.\n\n` +
+          `Davom etish uchun mini appdan qayta obuna bo'ling 👇`,
+          Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy', MINI_APP_URL)]])
+        );
+      } catch (e) {}
+    }
+
+    // 3 kun ichida tugaydiganlarni eslatish
+    const expiring = await db.getExpiringSubscriptions();
+    for (const sub of expiring) {
+      const endDate = new Date(sub.end_date);
+      const daysLeft = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24));
+      try {
+        await bot.telegram.sendMessage(
+          sub.user_id,
+          `⚠️ SNU ${sub.course_id} kursi obunangiz ${daysLeft} kundan keyin tugaydi!\n\n` +
+          `Uzilmaslik uchun mini appdan yangilang 👇`,
+          Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy', MINI_APP_URL)]])
+        );
+      } catch (e) {}
+    }
+
+    console.log(`Obuna tekshirildi: ${expired.length} tugadi, ${expiring.length} tugayapti`);
+  } catch (e) {
+    console.error('checkSubscriptions xatosi:', e);
+  }
+}
+
+// Har 24 soatda bir marta tekshirish
+setInterval(checkSubscriptions, 24 * 60 * 60 * 1000);
+// Botni ishga tushirganida ham tekshirish
+setTimeout(checkSubscriptions, 5000);
