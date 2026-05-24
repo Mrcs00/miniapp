@@ -653,6 +653,7 @@ function loadMyCourses() {
     .then(function(res) { return res.json(); })
     .then(function(data) {
       var courses = data.courses || [];
+      var coursesWithInfo = data.coursesWithInfo || [];
       if (courses.length === 0) {
         list.innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div><div class="empty-title">Sizda hali kurslar yo\'q</div><div class="empty-sub">Kurs sotib olib o\'qishni boshlang.</div><button class="empty-btn" onclick="showPage(\'courses\')">Kurslarni ko\'rish</button></div>';
         return;
@@ -662,12 +663,24 @@ function loadMyCourses() {
         var courseId = courses[i];
         var course = findCourse(courseId);
         if (!course) continue;
+
+        // Tugash sanasini topish
+        var endDate = '';
+        for (var j = 0; j < coursesWithInfo.length; j++) {
+          if (coursesWithInfo[j].courseId === courseId && coursesWithInfo[j].endDate) {
+            var d = new Date(coursesWithInfo[j].endDate);
+            endDate = d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear();
+            break;
+          }
+        }
+
         html += '<div class="big-course-card" onclick="openCourse(\'' + courseId + '\',\'my-courses\')">' +
           '<div class="bcc-img"><img src="' + course.img + '" alt="' + course.name + '" onerror="this.style.display=\'none\'"></div>' +
           '<div class="bcc-body">' +
           '<div class="bcc-name">' + course.name + '</div>' +
           '<div class="bcc-meta">📚 ' + course.dars + ' dars · ' + course.soat + ' soat</div>' +
           '<div style="color:#27AE60;font-size:13px;font-weight:600;margin-top:4px">✅ Sotib olingan</div>' +
+          (endDate ? '<div style="color:#888;font-size:12px;margin-top:2px">⏰ ' + endDate + ' gacha</div>' : '') +
           '<button class="bcc-btn" style="background:' + course.color + ';color:#fff;margin-top:6px" onclick="event.stopPropagation();openCourse(\'' + courseId + '\',\'my-courses\')">Davom etish ›</button>' +
           '</div></div>';
       }
@@ -690,14 +703,26 @@ function checkUserCourse(courseId) {
     .then(function(res) { return res.json(); })
     .then(function(data) {
       var courses = data.courses || [];
+      var coursesWithInfo = data.coursesWithInfo || [];
+
       if (courses.indexOf(courseId) !== -1) {
+        // Tugash sanasini topish
+        var endDate = '';
+        for (var i = 0; i < coursesWithInfo.length; i++) {
+          if (coursesWithInfo[i].courseId === courseId && coursesWithInfo[i].endDate) {
+            var d = new Date(coursesWithInfo[i].endDate);
+            endDate = d.getDate() + '.' + (d.getMonth()+1) + '.' + d.getFullYear();
+            break;
+          }
+        }
+
         if (buyBtn) {
           buyBtn.textContent = '✅ Davom etish';
           buyBtn.style.background = '#27AE60';
           buyBtn.onclick = null;
         }
         if (buyPrice) {
-          buyPrice.textContent = '✅ Sotib olingan';
+          buyPrice.innerHTML = '✅ Sotib olingan' + (endDate ? '<br><span style="font-size:11px;color:#888">' + endDate + ' gacha</span>' : '');
           buyPrice.style.color = '#27AE60';
           buyPrice.style.fontSize = '13px';
         }
