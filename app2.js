@@ -64,8 +64,8 @@ const LEVEL_IMAGES = {
 
 let currentLevel = 'boshlangich';
 let selectedCourse = null;
-let detailFromPage = 'home';   // course-detail sahifasidan orqaga qayerga ketish
-let bolimFromPage = 'course-detail'; // bolim sahifasidan orqaga qayerga ketish
+let detailFromPage = 'home';
+let bolimFromPage = 'course-detail';
 
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) {
@@ -80,6 +80,184 @@ if (tg) {
   }
 }
 
+// ══════════════════════════════════════════
+// 🔐 VIDEO HIMOYA TIZIMI
+// ══════════════════════════════════════════
+
+// Watermark yaratish — foydalanuvchi ID si bilan
+function createWatermark(userId) {
+  var existing = document.getElementById('video-watermark');
+  if (existing) existing.remove();
+
+  var watermark = document.createElement('div');
+  watermark.id = 'video-watermark';
+  watermark.style.cssText = [
+    'position:absolute',
+    'top:0','left:0','width:100%','height:100%',
+    'pointer-events:none',
+    'z-index:10',
+    'overflow:hidden',
+    'border-radius:inherit'
+  ].join(';');
+
+  // Diagonal watermark matni — 5x4 grid
+  var text = 'ID:' + userId;
+  var html = '';
+  for (var row = 0; row < 4; row++) {
+    for (var col = 0; col < 3; col++) {
+      html += '<div style="' +
+        'position:absolute;' +
+        'left:' + (col * 38 + 5) + '%;' +
+        'top:' + (row * 28 + 8) + '%;' +
+        'color:rgba(255,255,255,0.18);' +
+        'font-size:11px;' +
+        'font-weight:600;' +
+        'transform:rotate(-30deg);' +
+        'white-space:nowrap;' +
+        'user-select:none;' +
+        'letter-spacing:1px;' +
+        'font-family:monospace' +
+        '">' + text + '</div>';
+    }
+  }
+  watermark.innerHTML = html;
+
+  var videoWrap = document.getElementById('dars-video-wrap');
+  if (videoWrap) videoWrap.appendChild(watermark);
+}
+
+function removeWatermark() {
+  var w = document.getElementById('video-watermark');
+  if (w) w.remove();
+}
+
+// Screenshot/Screen recording himoyasi
+var _screenProtectionActive = false;
+var _videoBlocked = false;
+
+function startScreenProtection() {
+  if (_screenProtectionActive) return;
+  _screenProtectionActive = true;
+
+  // 1. visibilitychange — tab yashirilganda video pauza
+  document.addEventListener('visibilitychange', _onVisibilityChange);
+
+  // 2. Screen Capture API — screen recording aniqlanishi
+  if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+    var origGetDisplayMedia = navigator.mediaDevices.getDisplayMedia.bind(navigator.mediaDevices);
+    navigator.mediaDevices.getDisplayMedia = function(constraints) {
+      _blockVideoOnCapture();
+      return origGetDisplayMedia(constraints);
+    };
+  }
+
+  // 3. keydown — screenshot tugmachalari (PrintScreen, Win+Shift+S va h.k.)
+  document.addEventListener('keydown', _onKeyDown);
+
+  // 4. blur — oyna fokusdan chiqqanda (boshqa dastur screenshot olayotgan bo'lishi mumkin)
+  window.addEventListener('blur', _onWindowBlur);
+}
+
+function stopScreenProtection() {
+  if (!_screenProtectionActive) return;
+  _screenProtectionActive = false;
+  document.removeEventListener('visibilitychange', _onVisibilityChange);
+  document.removeEventListener('keydown', _onKeyDown);
+  window.removeEventListener('blur', _onWindowBlur);
+  _videoBlocked = false;
+  _restoreVideo();
+}
+
+function _onVisibilityChange() {
+  if (document.hidden) {
+    _pauseVideo();
+  }
+}
+
+function _onWindowBlur() {
+  // Faqat dars sahifasi ochiq bo'lganda
+  var darsPage = document.getElementById('page-dars');
+  if (darsPage && darsPage.classList.contains('active')) {
+    setTimeout(function() {
+      if (!document.hasFocus()) {
+        _pauseVideo();
+      }
+    }, 200);
+  }
+}
+
+function _onKeyDown(e) {
+  // PrintScreen
+  if (e.key === 'PrintScreen' || e.keyCode === 44) {
+    _blockVideoOnCapture();
+    e.preventDefault();
+  }
+  // Win+Shift+S (Windows snipping tool)
+  if (e.shiftKey && e.metaKey && e.key === 's') {
+    _blockVideoOnCapture();
+  }
+}
+
+function _blockVideoOnCapture() {
+  var darsPage = document.getElementById('page-dars');
+  if (!darsPage || !darsPage.classList.contains('active')) return;
+
+  _videoBlocked = true;
+  _pauseVideo();
+
+  // Ogohlantirish overlay
+  var overlay = document.getElementById('capture-warning');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'capture-warning';
+    overlay.style.cssText = [
+      'position:absolute','top:0','left:0','width:100%','height:100%',
+      'background:rgba(0,0,0,0.92)','z-index:100',
+      'display:flex','flex-direction:column',
+      'align-items:center','justify-content:center',
+      'border-radius:inherit','text-align:center','padding:20px','box-sizing:border-box'
+    ].join(';');
+    overlay.innerHTML =
+      '<div style="font-size:40px;margin-bottom:12px">🚫</div>' +
+      '<div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px">Video to\'xtatildi</div>' +
+      '<div style="color:#aaa;font-size:13px;line-height:1.5;margin-bottom:20px">' +
+        'Ekranni yozib olish taqiqlangan.<br>Materiallar mualliflik huquqi bilan himoyalangan.' +
+      '</div>' +
+      '<button onclick="dismissCaptureWarning()" style="' +
+        'background:#42A5F5;color:#fff;border:none;' +
+        'padding:10px 24px;border-radius:10px;' +
+        'font-size:14px;font-weight:600;cursor:pointer' +
+      '">Tushundim</button>';
+    var videoWrap = document.getElementById('dars-video-wrap');
+    if (videoWrap) videoWrap.appendChild(overlay);
+  } else {
+    overlay.style.display = 'flex';
+  }
+}
+
+function dismissCaptureWarning() {
+  var overlay = document.getElementById('capture-warning');
+  if (overlay) overlay.style.display = 'none';
+  _videoBlocked = false;
+}
+
+function _pauseVideo() {
+  var iframe = document.getElementById('dars-iframe');
+  if (iframe && iframe.style.display !== 'none') {
+    // YouTube iframe ga pause buyrug'i
+    try {
+      iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+    } catch(e) {}
+  }
+}
+
+function _restoreVideo() {
+  var overlay = document.getElementById('capture-warning');
+  if (overlay) overlay.style.display = 'none';
+}
+
+// ══════════════════════════════════════════
+
 function showPage(pageId) {
   var pages = document.querySelectorAll('.page');
   for (var i = 0; i < pages.length; i++) {
@@ -93,13 +271,17 @@ function showPage(pageId) {
   if (pageId === 'my-courses') {
     loadMyCourses();
   }
+  // Dars sahifasidan chiqilganda himoyani o'chirish
+  if (pageId !== 'dars') {
+    stopScreenProtection();
+    removeWatermark();
+  }
 }
 
 function goBackFromDetail() {
   showPage(detailFromPage);
 }
 
-// ── BOLIM sahifasidan orqaga ──
 function goBackFromBolim() {
   showPage(bolimFromPage);
 }
@@ -147,7 +329,6 @@ function openAlifboBolim(bolimId) {
   }
   if (!bolim) return;
 
-  // Alifbodan keldik — orqaga home ga qaytish
   bolimFromPage = 'home';
 
   var topbar = document.getElementById('bolim-topbar');
@@ -224,6 +405,11 @@ function openAlifboDars(bolimId) {
   var firstTab = document.querySelector('.dars-tab');
   setDarsTab('tavsif', firstTab);
 
+  // Himoya va watermark
+  var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 'unknown';
+  createWatermark(userId);
+  startScreenProtection();
+
   showPage('dars');
 }
 
@@ -276,7 +462,6 @@ function renderAllCourses() {
   list.innerHTML = html;
 }
 
-// ── Kurs detail ochish ──
 function openCourse(courseId, fromPage) {
   var course = null;
   var levels = Object.keys(COURSES);
@@ -344,9 +529,7 @@ function openCourse(courseId, fromPage) {
     }
   }, 50);
 
-  // Sotib olinganligini tekshirish
   checkUserCourse(course.id);
-
   showPage('course-detail');
 }
 
@@ -427,12 +610,10 @@ function toggleBolim(el, id) {
   }
 }
 
-// ── BO'LIM SAHIFASI ──
 function openBolim(courseId, bolimNum) {
   var course = findCourse(courseId);
   if (!course) return;
 
-  // Kurs detail sahifasidan keldik
   bolimFromPage = 'course-detail';
 
   var topbar = document.getElementById('bolim-topbar');
@@ -491,7 +672,6 @@ function renderBolimDarslar(course, bolimNum) {
   return html;
 }
 
-// ── DARS SAHIFASI ──
 let currentDars = { courseId: null, bolim: 1, dars: 1 };
 
 function openDars(courseId, bolimNum, darsNum) {
@@ -557,6 +737,11 @@ function openDars(courseId, bolimNum, darsNum) {
   var firstTab = document.querySelector('.dars-tab');
   setDarsTab('tavsif', firstTab);
 
+  // 🔐 Watermark va himoya ishga tushirish
+  var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 'unknown';
+  createWatermark(userId);
+  startScreenProtection();
+
   showPage('dars');
 }
 
@@ -576,7 +761,8 @@ function playVideo() {
   var iframe = document.getElementById('dars-iframe');
   if (!placeholder || !iframe) return;
   var demoVideoId = 'yWKe1Ml3ZlI';
-  iframe.src = 'https://www.youtube.com/embed/' + demoVideoId + '?autoplay=1';
+  // enablejsapi=1 — YouTube API orqali pause qilish uchun
+  iframe.src = 'https://www.youtube.com/embed/' + demoVideoId + '?autoplay=1&enablejsapi=1';
   placeholder.style.display = 'none';
   iframe.style.display = 'block';
 }
@@ -638,7 +824,6 @@ function selectPay(el) {
 
 var BACKEND_URL = 'https://miniapp-production-012c.up.railway.app';
 
-// ── MENING KURSLARIM ──
 function loadMyCourses() {
   var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
   var list = document.getElementById('my-courses-list');
@@ -664,7 +849,6 @@ function loadMyCourses() {
         var course = findCourse(courseId);
         if (!course) continue;
 
-        // Tugash sanasini topish
         var endDate = '';
         for (var j = 0; j < coursesWithInfo.length; j++) {
           if (coursesWithInfo[j].courseId === courseId && coursesWithInfo[j].endDate) {
@@ -691,7 +875,7 @@ function loadMyCourses() {
       list.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Xatolik yuz berdi</div><div class="empty-sub">Qayta urinib ko\'ring.</div></div>';
     });
 }
-// Foydalanuvchi kursni sotib olganmi tekshirish
+
 function checkUserCourse(courseId) {
   var userId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : null;
   var buyBtn = document.getElementById('buy-btn');
@@ -706,7 +890,6 @@ function checkUserCourse(courseId) {
       var coursesWithInfo = data.coursesWithInfo || [];
 
       if (courses.indexOf(courseId) !== -1) {
-        // Tugash sanasini topish
         var endDate = '';
         for (var i = 0; i < coursesWithInfo.length; i++) {
           if (coursesWithInfo[i].courseId === courseId && coursesWithInfo[i].endDate) {
@@ -761,7 +944,6 @@ function copyCard() {
   }
 }
 
-// Chek rasmini yuborish
 function uploadChek(input) {
   var file = input.files[0];
   if (!file) return;
@@ -815,7 +997,6 @@ function uploadChek(input) {
   });
 }
 
-// Bot chatini ochish
 function openBotChat() {
   if (tg) {
     tg.openTelegramLink('https://t.me/KCstudy_bot');
@@ -872,7 +1053,6 @@ updateBannerImg(isDark);
 renderHomeCourses('boshlangich');
 renderAllCourses2('all');
 
-// ── YANGI KURSLAR SAHIFASI ──
 function bigCourseCardHTML(course) {
   var progress = 0;
   var textColor = isLightColor(course.color) ? '#1a1a2e' : '#fff';
