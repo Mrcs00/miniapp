@@ -19,6 +19,7 @@ const B2_KEY_ID = process.env.B2_KEY_ID;
 const B2_APP_KEY = process.env.B2_APP_KEY;
 const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME;
 const B2_ENDPOINT = process.env.B2_ENDPOINT;
+const B2_BUCKET_ID = process.env.B2_BUCKET_ID;
 
 const COURSE_PRICES = {
   '1A': 150000, '1B': 150000,
@@ -78,6 +79,7 @@ async function getUploadUrl(apiUrl, authToken) {
 
 // Bucket ID olish
 async function getBucketId(apiUrl, authToken) {
+  if (process.env.B2_BUCKET_ID) return process.env.B2_BUCKET_ID;
   const response = await fetch(`${apiUrl}/b2api/v2/b2_list_buckets`, {
     method: 'POST',
     headers: {
