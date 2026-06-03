@@ -3,22 +3,21 @@ const express = require('express');
 const multer = require('multer');
 const db = require('./database');
 const crypto = require('crypto');
-const https = require('https');
 
 const upload = multer({ storage: multer.memoryStorage() });
-const videoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 * 1024 } }); // 500MB
+const videoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 * 1024 } });
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const ADMIN_ID = process.env.ADMIN_ID;
 const MINI_APP_URL = process.env.MINI_APP_URL;
 const CARD_NUMBER = process.env.CARD_NUMBER;
 const CARD_OWNER = process.env.CARD_OWNER;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-// ── Backblaze B2 sozlamalari ──
+// ── Backblaze B2 ──
 const B2_KEY_ID = process.env.B2_KEY_ID;
 const B2_APP_KEY = process.env.B2_APP_KEY;
 const B2_BUCKET_NAME = process.env.B2_BUCKET_NAME;
-const B2_ENDPOINT = process.env.B2_ENDPOINT;
 const B2_BUCKET_ID = process.env.B2_BUCKET_ID;
 
 const COURSE_PRICES = {
@@ -33,59 +32,35 @@ const COURSE_PRICES = {
 const bot = new Telegraf(BOT_TOKEN);
 
 // ══════════════════════════════════════════
-// 🎬 BACKBLAZE B2 FUNKSIYALARI
+// 🎬 BACKBLAZE B2
 // ══════════════════════════════════════════
-
-// B2 authorization token olish
 let b2AuthToken = null;
 let b2ApiUrl = null;
 let b2DownloadUrl = null;
 let b2AuthTime = 0;
 
 async function getB2Auth() {
-  // Token 23 soat amal qiladi
   if (b2AuthToken && Date.now() - b2AuthTime < 23 * 60 * 60 * 1000) {
     return { authToken: b2AuthToken, apiUrl: b2ApiUrl, downloadUrl: b2DownloadUrl };
   }
-
   const credentials = Buffer.from(`${B2_KEY_ID}:${B2_APP_KEY}`).toString('base64');
   const response = await fetch('https://api.backblazeb2.com/b2api/v2/b2_authorize_account', {
     headers: { 'Authorization': `Basic ${credentials}` }
   });
-
   if (!response.ok) throw new Error('B2 auth failed');
-
   const data = await response.json();
   b2AuthToken = data.authorizationToken;
   b2ApiUrl = data.apiUrl;
   b2DownloadUrl = data.downloadUrl;
   b2AuthTime = Date.now();
-
   return { authToken: b2AuthToken, apiUrl: b2ApiUrl, downloadUrl: b2DownloadUrl };
 }
 
-// Upload URL olish
-async function getUploadUrl(apiUrl, authToken) {
-  const response = await fetch(`${apiUrl}/b2api/v2/b2_get_upload_url`, {
-    method: 'POST',
-    headers: {
-      'Authorization': authToken,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ bucketId: await getBucketId(apiUrl, authToken) })
-  });
-  return response.json();
-}
-
-// Bucket ID olish
 async function getBucketId(apiUrl, authToken) {
-  if (process.env.B2_BUCKET_ID) return process.env.B2_BUCKET_ID;
+  if (B2_BUCKET_ID) return B2_BUCKET_ID;
   const response = await fetch(`${apiUrl}/b2api/v2/b2_list_buckets`, {
     method: 'POST',
-    headers: {
-      'Authorization': authToken,
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Authorization': authToken, 'Content-Type': 'application/json' },
     body: JSON.stringify({ accountId: B2_KEY_ID.split(':')[0] || B2_KEY_ID })
   });
   const data = await response.json();
@@ -93,13 +68,19 @@ async function getBucketId(apiUrl, authToken) {
   return bucket ? bucket.bucketId : null;
 }
 
-// Video B2 ga yuklash
+async function getUploadUrl(apiUrl, authToken) {
+  const response = await fetch(`${apiUrl}/b2api/v2/b2_get_upload_url`, {
+    method: 'POST',
+    headers: { 'Authorization': authToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ bucketId: await getBucketId(apiUrl, authToken) })
+  });
+  return response.json();
+}
+
 async function uploadToB2(fileBuffer, fileName, mimeType) {
   const { authToken, apiUrl } = await getB2Auth();
   const uploadData = await getUploadUrl(apiUrl, authToken);
-
   const sha1 = crypto.createHash('sha1').update(fileBuffer).digest('hex');
-
   const response = await fetch(uploadData.uploadUrl, {
     method: 'POST',
     headers: {
@@ -111,69 +92,50 @@ async function uploadToB2(fileBuffer, fileName, mimeType) {
     },
     body: fileBuffer
   });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error('B2 upload failed: ' + err);
-  }
-
+  if (!response.ok) throw new Error('B2 upload failed: ' + await response.text());
   return response.json();
 }
 
-// Signed URL yaratish (2 soatlik)
 async function getSignedUrl(fileName, expiresInSeconds = 7200) {
   const { authToken, apiUrl, downloadUrl } = await getB2Auth();
-
   const response = await fetch(`${apiUrl}/b2api/v2/b2_get_download_authorization`, {
     method: 'POST',
-    headers: {
-      'Authorization': authToken,
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Authorization': authToken, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       bucketId: await getBucketId(apiUrl, authToken),
       fileNamePrefix: fileName,
       validDurationInSeconds: expiresInSeconds
     })
   });
-
   const data = await response.json();
   return `${downloadUrl}/file/${B2_BUCKET_NAME}/${encodeURIComponent(fileName)}?Authorization=${data.authorizationToken}`;
 }
 
 // ══════════════════════════════════════════
-
-// ── /start ──
+// 🤖 TELEGRAM BOT
+// ══════════════════════════════════════════
 bot.start((ctx) => {
   const firstName = ctx.from.first_name || 'Foydalanuvchi';
   ctx.reply(
-    `Salom, ${firstName}! 👋\n\nKCstudy — Koreys tili o'rganish platformasi 🇰🇷\n\nQuyidagi tugmani bosib o'qishni boshlang!`,
-    Markup.inlineKeyboard([
-      [Markup.button.webApp('📚 KCstudy ga kirish', MINI_APP_URL)]
-    ])
+    `Salom, ${firstName}! 👋\n\nKCstudy — Koreys tili o'rganish platformasi 🇰🇷\n\nIlovani yuklab oling va o'qishni boshlang!`,
   );
 });
 
-// ── /help ──
 bot.command('help', (ctx) => {
   ctx.reply(
     '📌 Yordam:\n\n' +
-    '• Kurs sotib olish uchun mini appda "Sotib olish" tugmasini bosing\n' +
+    '• Kurs sotib olish uchun ilovada "Sotib olish" tugmasini bosing\n' +
     '• To\'lovdan so\'ng chekni shu botga yuboring\n' +
     '• Admin 24 soat ichida tasdiqlaydi\n\n' +
-    '/mycourses — mening kurslarim\n' +
-    '/status — so\'nggi buyurtma holati'
+    '/mycourses — mening kurslarim'
   );
 });
 
-// ── /mycourses ──
 bot.command('mycourses', async (ctx) => {
   const userId = ctx.from.id.toString();
   const courses = await db.getUserCourses(userId);
   if (courses.length === 0) {
-    ctx.reply('Sizda hali sotib olingan kurs yo\'q.\n\nKurs sotib olish uchun mini appni oching 👇',
-      Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy', MINI_APP_URL)]])
-    );
+    ctx.reply('Sizda hali sotib olingan kurs yo\'q.\n\nIlovani yuklab oling va kurs sotib oling!');
   } else {
     let text = '✅ Sizning kurslaringiz:\n\n';
     for (const courseId of courses) {
@@ -189,67 +151,20 @@ bot.command('mycourses', async (ctx) => {
   }
 });
 
-// ── Mini app dan to'lov ma'lumoti kelganda ──
-bot.on('web_app_data', async (ctx) => {
-  try {
-    const data = JSON.parse(ctx.webAppData.data);
-    if (data.action === 'payment') {
-      const courseId = data.course;
-      const userId = ctx.from.id.toString();
-      const username = ctx.from.username || '';
-      const firstName = ctx.from.first_name || '';
-      const price = COURSE_PRICES[courseId] || 150000;
-
-      if (await db.userHasCourse(userId, courseId)) {
-        return ctx.reply(`✅ Siz allaqachon SNU ${courseId} kursiga egasiz!`);
-      }
-
-      const orderId = `${userId}_${courseId}_${Date.now()}`;
-      await db.createOrder(orderId, userId, courseId, username, firstName);
-
-      await ctx.reply(
-        `💳 To'lov ma'lumotlari\n\n` +
-        `📚 Kurs: SNU ${courseId}\n` +
-        `💰 Narx: ${price.toLocaleString()} so'm\n\n` +
-        `Karta raqami:\n<code>${CARD_NUMBER}</code>\n` +
-        `Karta egasi: ${CARD_OWNER}\n\n` +
-        `⚠️ To'lov qilgandan so'ng <b>chek rasmini</b> shu chatga yuboring.\n` +
-        `Admin 24 soat ichida tasdiqlaydi.`,
-        { parse_mode: 'HTML' }
-      );
-
-      await bot.telegram.sendMessage(
-        ADMIN_ID,
-        `🛒 Yangi buyurtma!\n\n` +
-        `👤 ${firstName} ${username ? '@' + username : ''}\n` +
-        `🆔 ID: ${userId}\n` +
-        `📚 Kurs: SNU ${courseId}\n` +
-        `💰 Narx: ${price.toLocaleString()} so'm\n` +
-        `🔑 Order ID: <code>${orderId}</code>`,
-        { parse_mode: 'HTML' }
-      );
-    }
-  } catch (e) {
-    console.error('web_app_data error:', e);
-  }
-});
-
-// ── Chek rasmi kelganda ──
+// Chek rasmi kelganda
 bot.on('photo', async (ctx) => {
   const userId = ctx.from.id.toString();
   const username = ctx.from.username || '';
   const firstName = ctx.from.first_name || '';
-
   await ctx.forwardMessage(ADMIN_ID);
   await bot.telegram.sendMessage(
     ADMIN_ID,
-    `⬆️ Yuqoridagi chek:\n👤 ${firstName} ${username ? '@' + username : ''}\n🆔 ID: ${userId}\n\n` +
-    `Tasdiqlash uchun: /approve_ORDERID`
+    `⬆️ Yuqoridagi chek:\n👤 ${firstName} ${username ? '@' + username : ''}\n🆔 ID: ${userId}\n\nTasdiqlash uchun: /approve_ORDERID`
   );
   await ctx.reply('✅ Chekingiz qabul qilindi! Admin tez orada tasdiqlaydi.');
 });
 
-// ── Inline tugmalar ──
+// Inline tugmalar
 bot.on('callback_query', async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
   const data = ctx.callbackQuery.data;
@@ -265,8 +180,7 @@ bot.on('callback_query', async (ctx) => {
 
     await bot.telegram.sendMessage(
       order.userId,
-      `🎉 Tabriklaymiz!\n\n✅ SNU ${order.courseId} kursi sizga ulandi!\n\nMini appni oching va o'qishni boshlang 👇`,
-      Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy ga kirish', MINI_APP_URL)]])
+      `🎉 Tabriklaymiz!\n\n✅ SNU ${order.courseId} kursi sizga ulandi!\n\nIlovani oching va o'qishni boshlang 📱`
     );
 
     await ctx.editMessageCaption(ctx.callbackQuery.message.caption + '\n\n✅ TASDIQLANDI', { parse_mode: 'HTML' });
@@ -276,7 +190,6 @@ bot.on('callback_query', async (ctx) => {
     const orderId = data.replace('reject_', '');
     const order = await db.getOrder(orderId);
     if (!order) return ctx.answerCbQuery('❌ Order topilmadi!');
-
     await db.rejectOrder(orderId);
     await bot.telegram.sendMessage(order.userId, `❌ Afsuski to'lovingiz tasdiqlanmadi.\n\nMuammo bo'lsa admin bilan bog'laning.`);
     await ctx.editMessageCaption(ctx.callbackQuery.message.caption + '\n\n❌ BEKOR QILINDI', { parse_mode: 'HTML' });
@@ -284,7 +197,6 @@ bot.on('callback_query', async (ctx) => {
   }
 });
 
-// ── Admin: /approve ──
 bot.hears(/^\/approve_(.+)$/, async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
   const orderId = ctx.match[1];
@@ -294,28 +206,20 @@ bot.hears(/^\/approve_(.+)$/, async (ctx) => {
 
   await db.approveOrder(orderId);
   await db.addCourseToUser(order.userId, order.courseId);
-
-  await bot.telegram.sendMessage(
-    order.userId,
-    `🎉 Tabriklaymiz!\n\n✅ SNU ${order.courseId} kursi sizga ulandi!\n\nMini appni oching va o'qishni boshlang 👇`,
-    Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy ga kirish', MINI_APP_URL)]])
-  );
+  await bot.telegram.sendMessage(order.userId, `🎉 Tabriklaymiz!\n\n✅ SNU ${order.courseId} kursi sizga ulandi!\n\nIlovani oching va o'qishni boshlang 📱`);
   ctx.reply(`✅ Tasdiqlandi! SNU ${order.courseId} kursi ${order.firstName} ga ulandi.`);
 });
 
-// ── Admin: /reject ──
 bot.hears(/^\/reject_(.+)$/, async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
   const orderId = ctx.match[1];
   const order = await db.getOrder(orderId);
   if (!order) return ctx.reply('❌ Order topilmadi: ' + orderId);
-
   await db.rejectOrder(orderId);
   await bot.telegram.sendMessage(order.userId, `❌ Afsuski to'lovingiz tasdiqlanmadi.\n\nMuammo bo'lsa admin bilan bog'laning.`);
   ctx.reply(`❌ Bekor qilindi. ${order.firstName} ga xabar yuborildi.`);
 });
 
-// ── Admin: /orders ──
 bot.command('orders', async (ctx) => {
   if (ctx.from.id.toString() !== ADMIN_ID) return;
   const pendingOrders = await db.getPendingOrders();
@@ -325,10 +229,11 @@ bot.command('orders', async (ctx) => {
   ctx.reply(pending ? `📋 Kutayotgan buyurtmalar:\n\n${pending}` : '✅ Kutayotgan buyurtma yo\'q');
 });
 
-// ── Express server ──
+// ══════════════════════════════════════════
+// 🌐 EXPRESS SERVER
+// ══════════════════════════════════════════
 const app = express();
 app.use(express.json());
-
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -337,9 +242,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get('/', (req, res) => res.send('KCstudy bot ishlayapti!'));
-
-// ── Rate limiting ──
+// Rate limiting
 const requestCounts = {};
 function rateLimit(userId, maxPerMinute = 10) {
   const now = Date.now();
@@ -351,9 +254,12 @@ function rateLimit(userId, maxPerMinute = 10) {
   return requestCounts[key] > maxPerMinute;
 }
 
+// userId validatsiya — Telegram ID yoki Firebase UID
 function isValidUserId(userId) {
-  return userId && /^\d+$/.test(userId.toString()) && userId.toString().length >= 5;
+  return userId && userId.toString().length >= 5;
 }
+
+app.get('/', (req, res) => res.send('KCstudy API ishlayapti! ✅'));
 
 // ── Foydalanuvchi kurslarini olish ──
 app.get('/my-courses', async (req, res) => {
@@ -370,11 +276,7 @@ app.get('/my-courses', async (req, res) => {
   res.json({ courses, coursesWithInfo });
 });
 
-// ══════════════════════════════════════════
-// 🎬 VIDEO ENDPOINTLARI
-// ══════════════════════════════════════════
-
-// ── Video signed URL olish (mini app uchun) ──
+// ── Video URL olish (Flutter + Mini app uchun) ──
 app.get('/video-url', async (req, res) => {
   try {
     const { userId, courseId, bolim, dars } = req.query;
@@ -382,18 +284,11 @@ app.get('/video-url', async (req, res) => {
     if (!isValidUserId(userId)) return res.json({ success: false, error: 'Noto\'g\'ri so\'rov' });
     if (rateLimit(userId, 20)) return res.status(429).json({ error: 'Too many requests' });
 
-    // Kurs sotib olinganmi tekshirish
     const hasCourse = await db.userHasCourse(userId.toString(), courseId);
-    if (!hasCourse) {
-      return res.json({ success: false, error: 'Kurs sotib olinmagan' });
-    }
+    if (!hasCourse) return res.json({ success: false, error: 'Kurs sotib olinmagan' });
 
-    // Video fayl nomi: masalan 1A_bolim1_dars1.mp4
     const fileName = `${courseId}_bolim${bolim}_dars${dars}.mp4`;
-
-    // Signed URL yaratish (2 soatlik)
     const signedUrl = await getSignedUrl(fileName, 7200);
-
     res.json({ success: true, url: signedUrl });
   } catch (e) {
     console.error('/video-url error:', e);
@@ -401,45 +296,95 @@ app.get('/video-url', async (req, res) => {
   }
 });
 
-// ── Admin: video yuklash ──
-app.post('/admin/upload-video', videoUpload.single('video'), async (req, res) => {
+// ── 🤖 AI Tarjima (Flutter lug'at uchun) ──
+app.get('/translate', async (req, res) => {
+  const word = req.query.word;
+  if (!word) return res.json({ success: false, error: 'So\'z kiritilmadi' });
+  if (rateLimit(req.ip || 'anon', 20)) return res.status(429).json({ error: 'Too many requests' });
+
   try {
-    // Admin tekshiruvi
-    const adminKey = req.headers['x-admin-key'];
-    if (adminKey !== BOT_TOKEN) {
-      return res.status(403).json({ success: false, error: 'Ruxsat yo\'q' });
-    }
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 500,
+        messages: [{
+          role: 'user',
+          content: `Koreys-o'zbek lug'at yordamchisi. "${word}" so'zini tarjima qil.
+Faqat JSON qaytargin, boshqa hech narsa yozma:
+{"kr":"koreys yozuvi","uz":"o'zbek tarjimasi","romanization":"o'qilishi","example_kr":"koreys misol gap","example_uz":"misol gapning o'zbek tarjimasi"}
+Agar o'zbek so'z bo'lsa koreyscha ber. Agar koreys so'z bo'lsa o'zbekcha ber.`
+        }]
+      })
+    });
 
-    const { courseId, bolim, dars } = req.body;
-    const file = req.file;
+    const data = await response.json();
+    const text = data.content[0].text;
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    res.json({ success: true, ...parsed });
+  } catch (e) {
+    console.error('/translate error:', e);
+    res.json({ success: false, error: 'Tarjima qilishda xato' });
+  }
+});
 
-    if (!file || !courseId || !bolim || !dars) {
-      return res.json({ success: false, error: 'Ma\'lumotlar yetarli emas' });
-    }
+// ── Flutter to'lov so'rovi ──
+app.post('/payment', async (req, res) => {
+  try {
+    const { userId, courseId, username, firstName } = req.body;
 
-    // Fayl turi tekshirish
-    if (!file.mimetype.startsWith('video/')) {
-      return res.json({ success: false, error: 'Faqat video yuborilishi mumkin' });
-    }
+    if (!isValidUserId(userId) || !courseId) return res.json({ success: false, error: 'Ma\'lumotlar noto\'g\'ri' });
+    if (rateLimit(userId, 5)) return res.status(429).json({ success: false, error: 'Juda ko\'p so\'rov' });
 
-    const fileName = `${courseId}_bolim${bolim}_dars${dars}.mp4`;
+    const validCourses = ['1A','1B','2A','2B','3A','3B','4A','4B','5A','5B','6A','6B'];
+    if (!validCourses.includes(courseId)) return res.json({ success: false, error: 'Noto\'g\'ri kurs' });
+    if (await db.userHasCourse(userId.toString(), courseId)) return res.json({ success: false, error: 'Kurs allaqachon mavjud' });
 
-    // B2 ga yuklash
-    const result = await uploadToB2(file.buffer, fileName, file.mimetype);
+    const price = COURSE_PRICES[courseId] || 150000;
+    const orderId = `${userId}_${courseId}_${Date.now()}`;
+    await db.createOrder(orderId, userId.toString(), courseId, username || '', firstName || '');
+
+    // Adminga xabar
+    await bot.telegram.sendMessage(
+      ADMIN_ID,
+      `🛒 Yangi buyurtma (Flutter ilova)!\n\n` +
+      `👤 ${firstName || 'Noma\'lum'} ${username ? '@' + username : ''}\n` +
+      `🆔 ID: ${userId}\n` +
+      `📚 Kurs: SNU ${courseId}\n` +
+      `💰 Narx: ${price.toLocaleString()} so'm\n` +
+      `🔑 Order ID: <code>${orderId}</code>`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [[
+            { text: '✅ Tasdiqlash', callback_data: `approve_${orderId}` },
+            { text: '❌ Bekor qilish', callback_data: `reject_${orderId}` }
+          ]]
+        }
+      }
+    );
 
     res.json({
       success: true,
-      fileName: fileName,
-      fileId: result.fileId,
-      size: file.size
+      orderId,
+      price,
+      cardNumber: CARD_NUMBER,
+      cardOwner: CARD_OWNER,
+      message: `To'lov ma'lumotlari:\nKarta: ${CARD_NUMBER}\nEgasi: ${CARD_OWNER}\nNarx: ${price.toLocaleString()} so'm\n\nTo'lovdan so'ng chekni Telegram botga yuboring.`
     });
   } catch (e) {
-    console.error('/upload-video error:', e);
+    console.error('/payment error:', e);
     res.json({ success: false, error: e.message });
   }
 });
 
-// ── Chek rasmi yuklash ──
+// ── Chek yuklash ──
 app.post('/upload-chek', upload.single('photo'), async (req, res) => {
   try {
     const { userId, courseId, username, firstName } = req.body;
@@ -469,7 +414,6 @@ app.post('/upload-chek', upload.single('photo'), async (req, res) => {
       }
     });
 
-    await bot.telegram.sendMessage(userId, `✅ Chekingiz qabul qilindi!\n\nAdmin 24 soat ichida tasdiqlaydi.`);
     res.json({ success: true });
   } catch (e) {
     console.error('/upload-chek error:', e);
@@ -477,57 +421,23 @@ app.post('/upload-chek', upload.single('photo'), async (req, res) => {
   }
 });
 
-// ── To'lov so'rovi ──
-app.post('/payment', async (req, res) => {
+// ── Admin: video yuklash ──
+app.post('/admin/upload-video', videoUpload.single('video'), async (req, res) => {
   try {
-    const { userId, courseId, username, firstName } = req.body;
+    const adminKey = req.headers['x-admin-key'];
+    if (adminKey !== BOT_TOKEN) return res.status(403).json({ success: false, error: 'Ruxsat yo\'q' });
 
-    if (!isValidUserId(userId) || !courseId) return res.json({ success: false, error: 'Ma\'lumotlar noto\'g\'ri' });
-    if (rateLimit(userId, 5)) return res.status(429).json({ success: false, error: 'Juda ko\'p so\'rov' });
+    const { courseId, bolim, dars } = req.body;
+    const file = req.file;
 
-    const validCourses = ['1A','1B','2A','2B','3A','3B','4A','4B','5A','5B','6A','6B'];
-    if (!validCourses.includes(courseId)) return res.json({ success: false, error: 'Noto\'g\'ri kurs' });
-    if (await db.userHasCourse(userId.toString(), courseId)) return res.json({ success: false, error: 'Kurs allaqachon mavjud' });
+    if (!file || !courseId || !bolim || !dars) return res.json({ success: false, error: 'Ma\'lumotlar yetarli emas' });
+    if (!file.mimetype.startsWith('video/')) return res.json({ success: false, error: 'Faqat video yuborilishi mumkin' });
 
-    const price = COURSE_PRICES[courseId] || 150000;
-    const orderId = `${userId}_${courseId}_${Date.now()}`;
-    await db.createOrder(orderId, userId.toString(), courseId, username || '', firstName || '');
-
-    await bot.telegram.sendMessage(
-      userId,
-      `💳 To'lov ma'lumotlari\n\n` +
-      `📚 Kurs: SNU ${courseId}\n` +
-      `💰 Narx: ${price.toLocaleString()} so'm\n\n` +
-      `Karta raqami:\n<code>${CARD_NUMBER}</code>\n` +
-      `Karta egasi: ${CARD_OWNER}\n\n` +
-      `⚠️ To'lov qilgandan so'ng <b>chek rasmini</b> shu chatga yuboring.\n` +
-      `Admin 24 soat ichida tasdiqlaydi.\n\n` +
-      `🔑 Buyurtma ID: <code>${orderId}</code>`,
-      { parse_mode: 'HTML' }
-    );
-
-    await bot.telegram.sendMessage(
-      ADMIN_ID,
-      `🛒 Yangi buyurtma!\n\n` +
-      `👤 ${firstName || ''} ${username ? '@' + username : ''}\n` +
-      `🆔 ID: ${userId}\n` +
-      `📚 Kurs: SNU ${courseId}\n` +
-      `💰 Narx: ${price.toLocaleString()} so'm\n` +
-      `🔑 Order ID: <code>${orderId}</code>`,
-      {
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [[
-            { text: '✅ Tasdiqlash', callback_data: `approve_${orderId}` },
-            { text: '❌ Bekor qilish', callback_data: `reject_${orderId}` }
-          ]]
-        }
-      }
-    );
-
-    res.json({ success: true });
+    const fileName = `${courseId}_bolim${bolim}_dars${dars}.mp4`;
+    const result = await uploadToB2(file.buffer, fileName, file.mimetype);
+    res.json({ success: true, fileName, fileId: result.fileId, size: file.size });
   } catch (e) {
-    console.error('/payment error:', e);
+    console.error('/upload-video error:', e);
     res.json({ success: false, error: e.message });
   }
 });
@@ -544,32 +454,22 @@ bot.launch().then(() => {
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
-// ── Obuna tekshirish ──
+// Obuna tekshirish
 async function checkSubscriptions() {
   try {
     const expired = await db.deactivateExpiredSubscriptions();
     for (const sub of expired) {
       try {
-        await bot.telegram.sendMessage(
-          sub.user_id,
-          `⏰ SNU ${sub.course_id} kursi obunangiz tugadi.\n\nDavom etish uchun mini appdan qayta obuna bo'ling 👇`,
-          Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy', MINI_APP_URL)]])
-        );
+        await bot.telegram.sendMessage(sub.user_id, `⏰ SNU ${sub.course_id} kursi obunangiz tugadi.\n\nDavom etish uchun ilovadan qayta obuna bo'ling 📱`);
       } catch (e) {}
     }
-
     const expiring = await db.getExpiringSubscriptions();
     for (const sub of expiring) {
       const daysLeft = Math.ceil((new Date(sub.end_date) - new Date()) / (1000 * 60 * 60 * 24));
       try {
-        await bot.telegram.sendMessage(
-          sub.user_id,
-          `⚠️ SNU ${sub.course_id} kursi obunangiz ${daysLeft} kundan keyin tugaydi!\n\nUzilmaslik uchun mini appdan yangilang 👇`,
-          Markup.inlineKeyboard([[Markup.button.webApp('📚 KCstudy', MINI_APP_URL)]])
-        );
+        await bot.telegram.sendMessage(sub.user_id, `⚠️ SNU ${sub.course_id} kursi obunangiz ${daysLeft} kundan keyin tugaydi!\n\nUzilmaslik uchun ilovadan yangilang 📱`);
       } catch (e) {}
     }
-    console.log(`Obuna tekshirildi: ${expired.length} tugadi, ${expiring.length} tugayapti`);
   } catch (e) {
     console.error('checkSubscriptions xatosi:', e);
   }
