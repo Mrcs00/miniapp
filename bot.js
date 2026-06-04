@@ -331,7 +331,7 @@ Agar o'zbek so'z bo'lsa koreyscha ber. Agar koreys so'z bo'lsa o'zbekcha ber.`
     res.json({ success: true, ...parsed });
   } catch (e) {
     console.error('/translate error:', e);
-    res.json({ success: false, error: 'Tarjima qilishda xato' });
+    res.json({ success: false, error: e.message, stack: e.stack });
   }
 });
 
