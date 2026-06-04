@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 const { Telegraf, Markup } = require('telegraf');
 const express = require('express');
 const multer = require('multer');
