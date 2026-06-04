@@ -325,7 +325,11 @@ Agar o'zbek so'z bo'lsa koreyscha ber. Agar koreys so'z bo'lsa o'zbekcha ber.`
     });
 
     const data = await response.json();
-    const text = data.content[0].text;
+    console.log('AI response:', JSON.stringify(data));
+if (!data.content || !data.content[0]) {
+  throw new Error('AI javob bermadi: ' + JSON.stringify(data));
+}
+const text = data.content[0].text;
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
     res.json({ success: true, ...parsed });
